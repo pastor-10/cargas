@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cargas</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<link rel="icon" type="image/png" href="./icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cargas">
+<meta name="application-name" content="Cargas">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F2F4F5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1214" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Registro de entrenos: peso, reps y RIR por serie, con la referencia de la última vez.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F2F4F5; --surface:#FFFFFF; --surface-2:#E7EBED; --sunken:#DCE2E5;
+  --line:#CFD6DA; --line-soft:#E2E7EA;
+  --ink:#12171A; --ink-2:#57626A; --ink-3:#8A959C;
+  --accent:#1C5C9E; --accent-soft:#DCE8F4; --on-accent:#FFFFFF;
+  --rir-3:#2B7048; --rir-2:#9A7614; --rir-1:#B5501F; --rir-0:#9E2222;
+  --done:#2B7048; --done-soft:#DCEBE2;
+  --warn:#8A5A10; --warn-soft:#F6EBD6;
+  --radius:10px;
+  --font-d:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --font-b:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1214; --surface:#161C1F; --surface-2:#1E262A; --sunken:#11171A;
+    --line:#2A343A; --line-soft:#222B30;
+    --ink:#ECF1F3; --ink-2:#98A4AB; --ink-3:#6A757C;
+    --accent:#5A9EE0; --accent-soft:#17304A; --on-accent:#08131F;
+    --rir-3:#5FBE8A; --rir-2:#D4AC4A; --rir-1:#E08457; --rir-0:#E36B6B;
+    --done:#5FBE8A; --done-soft:#163023;
+    --warn:#D9AC5C; --warn-soft:#2E2413;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1214; --surface:#161C1F; --surface-2:#1E262A; --sunken:#11171A;
+  --line:#2A343A; --line-soft:#222B30;
+  --ink:#ECF1F3; --ink-2:#98A4AB; --ink-3:#6A757C;
+  --accent:#5A9EE0; --accent-soft:#17304A; --on-accent:#08131F;
+  --rir-3:#5FBE8A; --rir-2:#D4AC4A; --rir-1:#E08457; --rir-0:#E36B6B;
+  --done:#5FBE8A; --done-soft:#163023;
+  --warn:#D9AC5C; --warn-soft:#2E2413;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:var(--font-b); font-size:15px; line-height:1.45;
+  -webkit-text-size-adjust:100%;
+}
+img{max-width:100%}
+.wrap{max-width:640px; margin:0 auto; padding:0 14px 138px}
+
+.top{
+  position:sticky; top:0; z-index:20; background:var(--ground);
+  padding:calc(12px + env(safe-area-inset-top,0px)) 0 10px;
+  border-bottom:1px solid var(--line-soft);
+}
+.top-row{display:flex; align-items:baseline; justify-content:space-between; gap:12px}
+h1{
+  font-family:var(--font-d); font-weight:700; font-size:27px; line-height:1;
+  letter-spacing:.01em; margin:0; text-transform:uppercase;
+}
+.fecha{
+  font-family:var(--font-d); font-size:17px; font-weight:500;
+  color:var(--ink-2); letter-spacing:.03em; text-transform:uppercase;
+  font-variant-numeric:tabular-nums; white-space:nowrap;
+}
+.dias{display:flex; gap:6px; margin-top:11px; overflow-x:auto; scrollbar-width:none}
+.dias::-webkit-scrollbar{display:none}
+.dia{
+  flex:1 0 auto; min-width:0; padding:7px 11px 8px; border:1px solid var(--line);
+  background:var(--surface); border-radius:var(--radius); cursor:pointer;
+  text-align:left; color:var(--ink-2); font-family:var(--font-b);
+  display:flex; flex-direction:column; gap:1px;
+}
+.dia b{font-family:var(--font-d); font-size:15px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; line-height:1}
+.dia span{font-size:11.5px; line-height:1.2; white-space:nowrap}
+.dia[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.dia:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+.lista{display:flex; flex-direction:column; gap:8px; margin-top:14px}
+.ej{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden}
+.ej.completo{border-color:var(--done)}
+.ej-cab{
+  width:100%; display:grid; grid-template-columns:1fr auto; gap:10px;
+  align-items:center; padding:11px 12px; background:none; border:0;
+  cursor:pointer; text-align:left; color:inherit; font-family:var(--font-b);
+}
+.ej-cab:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+.ej-nom{font-weight:600; font-size:14.5px; line-height:1.25}
+.ej-meta{font-size:12px; color:var(--ink-2); margin-top:3px; font-variant-numeric:tabular-nums; display:flex; flex-wrap:wrap; gap:4px 8px}
+.ej-meta .obj{font-family:var(--font-d); font-size:13.5px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-3)}
+.ej-meta .ult b{color:var(--ink); font-weight:600}
+.ej-meta .nuevo{color:var(--ink-3); font-style:italic}
+.cuenta{
+  font-family:var(--font-d); font-size:19px; font-weight:600; line-height:1;
+  color:var(--ink-3); font-variant-numeric:tabular-nums; letter-spacing:.02em;
+  padding:5px 9px; border-radius:7px; background:var(--surface-2); white-space:nowrap;
+}
+.ej.completo .cuenta{background:var(--done-soft); color:var(--done)}
+.ej.parcial .cuenta{background:var(--accent-soft); color:var(--accent)}
+
+.series{border-top:1px solid var(--line-soft); padding:4px 12px 12px; background:var(--sunken)}
+.serie{display:grid; grid-template-columns:22px 1fr 1fr auto 40px; gap:7px; align-items:center; padding:8px 0; border-bottom:1px solid var(--line-soft)}
+.serie:last-child{border-bottom:0}
+.n{font-family:var(--font-d); font-size:17px; font-weight:600; color:var(--ink-3); text-align:center; font-variant-numeric:tabular-nums}
+.campo{position:relative}
+.campo input{
+  width:100%; padding:9px 8px; border:1px solid var(--line); border-radius:8px;
+  background:var(--surface); color:var(--ink); font-family:var(--font-d);
+  font-size:20px; font-weight:600; font-variant-numeric:tabular-nums;
+  text-align:center; -moz-appearance:textfield;
+}
+.campo input::-webkit-outer-spin-button,.campo input::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
+.campo input:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:var(--accent)}
+.campo u{position:absolute; right:6px; bottom:2px; font-size:9px; text-decoration:none; color:var(--ink-3); text-transform:uppercase; letter-spacing:.06em; pointer-events:none}
+.rir{display:flex; gap:3px}
+.rir button{
+  width:26px; height:36px; padding:0; border:1px solid var(--line); border-radius:7px;
+  background:var(--surface); color:var(--ink-3); cursor:pointer;
+  font-family:var(--font-d); font-size:16px; font-weight:600; line-height:1; font-variant-numeric:tabular-nums;
+}
+.rir button:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.rir button[aria-pressed="true"]{color:var(--on-accent); border-color:transparent}
+.rir button[data-r="0"][aria-pressed="true"]{background:var(--rir-0)}
+.rir button[data-r="1"][aria-pressed="true"]{background:var(--rir-1)}
+.rir button[data-r="2"][aria-pressed="true"]{background:var(--rir-2)}
+.rir button[data-r="3"][aria-pressed="true"],.rir button[data-r="4"][aria-pressed="true"]{background:var(--rir-3)}
+.check{
+  width:40px; height:38px; border:1px solid var(--line); border-radius:8px;
+  background:var(--surface); cursor:pointer; color:var(--ink-3);
+  display:flex; align-items:center; justify-content:center; font-size:19px; line-height:1;
+}
+.check:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.serie.hecha .check{background:var(--done); border-color:var(--done); color:#fff}
+.serie.hecha .campo input{border-color:var(--done)}
+.cab-serie{
+  display:grid; grid-template-columns:22px 1fr 1fr auto 40px; gap:7px; padding:9px 0 3px;
+  font-family:var(--font-d); font-size:12px; font-weight:600; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--ink-3);
+}
+.cab-serie span:nth-child(2),.cab-serie span:nth-child(3){text-align:center}
+.cab-serie span:nth-child(4){width:100px}
+
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:12px; margin-top:8px}
+.card h2{font-family:var(--font-d); font-size:16px; font-weight:600; margin:0 0 8px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-2)}
+.fila{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+.fila input[type=number]{
+  flex:1; min-width:110px; padding:10px; border:1px solid var(--line); border-radius:8px;
+  background:var(--surface); color:var(--ink); font-family:var(--font-d);
+  font-size:24px; font-weight:600; text-align:center; font-variant-numeric:tabular-nums; -moz-appearance:textfield;
+}
+.fila input[type=number]::-webkit-outer-spin-button,.fila input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
+.fila input[type=number]:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:var(--accent)}
+.btn{
+  padding:10px 16px; border:1px solid var(--accent); border-radius:8px;
+  background:var(--accent); color:var(--on-accent); cursor:pointer;
+  font-family:var(--font-d); font-size:16px; font-weight:600;
+  letter-spacing:.05em; text-transform:uppercase; white-space:nowrap;
+}
+.btn:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+.btn.sec{background:none; color:var(--accent)}
+.nota{font-size:12.5px; color:var(--ink-2); margin:8px 0 0; line-height:1.5}
+.nota b{color:var(--ink)}
+.aviso{margin-top:10px; padding:10px 12px; border-radius:var(--radius); background:var(--warn-soft); color:var(--warn); font-size:12.5px; line-height:1.5}
+
+.barra{
+  position:fixed; left:0; right:0; bottom:0; z-index:30;
+  background:var(--surface); border-top:1px solid var(--line);
+  padding:9px 14px calc(9px + env(safe-area-inset-bottom,0px));
+}
+.barra-in{max-width:640px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px}
+.stats{display:flex; gap:16px}
+.stat{display:flex; flex-direction:column}
+.stat b{font-family:var(--font-d); font-size:21px; font-weight:700; line-height:1.05; font-variant-numeric:tabular-nums}
+.stat span{font-family:var(--font-d); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); line-height:1.3}
+.sync{display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--ink-2); text-align:right; max-width:180px; line-height:1.3}
+.punto{width:8px; height:8px; border-radius:50%; background:var(--done); flex:none}
+.sync[data-e="aviso"] .punto{background:var(--warn)}
+
+@media (max-width:400px){
+  .serie,.cab-serie{grid-template-columns:18px 1fr 1fr auto 36px; gap:5px}
+  .rir button{width:23px}
+  .check{width:36px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="top-row">
+      <h1>Cargas</h1>
+      <div class="fecha" id="fecha">—</div>
+    </div>
+    <div class="dias" id="dias" role="group" aria-label="Día de entrenamiento"></div>
+  </header>
+
+  <main>
+    <div class="lista" id="lista"></div>
+
+    <section class="card">
+      <h2>Peso corporal</h2>
+      <div class="fila">
+        <input id="peso" type="number" inputmode="decimal" step="0.1" min="30" max="200" placeholder="68.0" aria-label="Peso corporal en kilos">
+        <button class="btn" id="peso-btn" type="button">Guardar</button>
+      </div>
+      <p class="nota" id="peso-nota">En ayunas, tras el baño. La media semanal es lo que cuenta, no el día suelto.</p>
+    </section>
+
+    <section class="card">
+      <h2>Copia de seguridad</h2>
+      <p class="nota" style="margin-top:0">
+        Todo se guarda <b>solo en este móvil</b>. Exporta de vez en cuando: el archivo es tu copia y es lo que le pasas a Claude para el análisis.
+      </p>
+      <div class="fila" style="margin-top:10px">
+        <button class="btn" id="exportar" type="button">Exportar</button>
+        <button class="btn sec" id="importar-btn" type="button">Restaurar</button>
+        <input id="importar" type="file" accept="application/json,.json" hidden>
+      </div>
+      <p class="nota" id="copia-nota"></p>
+      <div class="aviso" id="copia-aviso" hidden></div>
+    </section>
+
+    <section class="card">
+      <h2>Cómo llevar la serie</h2>
+      <p class="nota" style="margin-top:0">
+        <b>Doble progresión:</b> cuando llegues al tope de reps del rango en todas las series, subes el peso lo mínimo posible y vuelves abajo del rango.<br>
+        <b>RIR por semana del mesociclo:</b> semanas 1-2 → 3 · semanas 3-4 → 2 · semana 5 → 1-0.<br>
+        <b>Semana 1:</b> no busques el fallo, busca cargas. Anota lo que muevas con 3 de margen.
+      </p>
+    </section>
+  </main>
+</div>
+
+<div class="barra">
+  <div class="barra-in">
+    <div class="stats">
+      <div class="stat"><b id="st-series">0/0</b><span>Series</span></div>
+      <div class="stat"><b id="st-tonelaje">0</b><span>kg movidos</span></div>
+    </div>
+    <div class="sync" id="sync"><span class="punto"></span><span id="sync-txt">Guardado</span></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+const RUTINA = [
+  { id:1, nombre:"Pierna A", corto:"Pierna A", ejercicios:[
+    { n:"Haka",                              s:4, r:"8-10"  },
+    { n:"Prensa",                            s:4, r:"10-12" },
+    { n:"Extensión de cuádriceps",           s:4, r:"12-15" },
+    { n:"Femoral sentado",                   s:4, r:"12-15" },
+    { n:"Máquina de gemelo",                 s:4, r:"10-12" },
+    { n:"Aductor",                           s:3, r:"10-12", opcional:true }
+  ]},
+  { id:2, nombre:"Empuje", corto:"Empuje", ejercicios:[
+    { n:"Press plano con mancuernas",        s:4, r:"8-10"  },
+    { n:"Press inclinado",                   s:3, r:"8-12"  },
+    { n:"Aperturas en polea",                s:3, r:"12-15" },
+    { n:"Press militar con mancuernas",      s:4, r:"8-10"  },
+    { n:"Elevaciones laterales en polea",    s:4, r:"12-15" },
+    { n:"Extensión de tríceps en polea",     s:3, r:"10-12" },
+    { n:"Extensión de tríceps sobre cabeza", s:3, r:"10-12" }
+  ]},
+  { id:3, nombre:"Tirón", corto:"Tirón", ejercicios:[
+    { n:"Dominadas",                         s:4, r:"5-10"  },
+    { n:"Remo con apoyo de pecho",           s:4, r:"8-10"  },
+    { n:"Jalón al pecho",                    s:4, r:"10-12" },
+    { n:"Remo sentado unilateral",           s:3, r:"10-12" },
+    { n:"Curl con mancuerna unilateral",     s:4, r:"8-10"  },
+    { n:"Curl de bíceps sentado",            s:3, r:"8-12"  },
+    { n:"Curl martillo en polea",            s:3, r:"12-15" }
+  ]},
+  { id:4, nombre:"Pierna B", corto:"Pierna B", ejercicios:[
+    { n:"Peso muerto rumano",                s:4, r:"6-10"  },
+    { n:"Hip thrust",                        s:3, r:"8-12"  },
+    { n:"Búlgaras",                          s:3, r:"10-12" },
+    { n:"Femoral tumbado",                   s:3, r:"10-15" },
+    { n:"Gemelo sentado",                    s:4, r:"12-20" },
+    { n:"Abdominales en polea",              s:3, r:"10-15" }
+  ]},
+  { id:5, nombre:"Estética", corto:"Estética", ejercicios:[
+    { n:"Elevaciones laterales",             s:4, r:"12-20" },
+    { n:"Mariposa inversa",                  s:4, r:"15-20" },
+    { n:"Press inclinado 30°",               s:3, r:"8-12"  },
+    { n:"Pullover en polea alta",            s:3, r:"12-15" },
+    { n:"Curl inclinado con mancuernas",     s:3, r:"10-15" },
+    { n:"Extensión de tríceps en polea",     s:3, r:"10-15" },
+    { n:"Plancha o rueda abdominal",         s:3, r:"—", sinCarga:true }
+  ]}
+];
+
+const K = { ses:"gc.ses.", ult:"gc.ultimas", peso:"gc.peso", dia:"gc.dia", copia:"gc.ultimaCopia" };
+const AVISO_COPIA = 12; // sesiones sin exportar antes de avisar
+
+function leer(k){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; }catch(e){ return null; } }
+function escribir(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; } }
+function claves(){ try{ return Object.keys(localStorage); }catch(e){ return []; } }
+
+const hoy = new Date();
+const pad = n => String(n).padStart(2,"0");
+const FECHA = hoy.getFullYear()+"-"+pad(hoy.getMonth()+1)+"-"+pad(hoy.getDate());
+
+let dia = Number(leer(K.dia)) || 1;
+let sesion = null;
+let ultimas = leer(K.ult) || {};
+
+function docId(f,d){ return f+"_d"+d; }
+function bloque(id){ return RUTINA.find(b => b.id === id); }
+
+function cargarSesion(){
+  const id = docId(FECHA,dia);
+  sesion = leer(K.ses+id) || { fecha:FECHA, dia:dia, nombre:bloque(dia).nombre, series:[] };
+  if(!Array.isArray(sesion.series)) sesion.series = [];
+}
+function serieDe(ej,i){ return sesion.series.find(s => s.ejercicio === ej && s.serie === i) || null; }
+
+function guardar(){
+  const ok = escribir(K.ses+docId(FECHA,dia), sesion);
+  const el = document.getElementById("sync");
+  if(!ok){
+    el.dataset.e = "aviso";
+    document.getElementById("sync-txt").textContent = "No se pudo guardar";
+  }else{
+    el.removeAttribute("data-e");
+    document.getElementById("sync-txt").textContent = "Guardado";
+  }
+  indexarUltimas();
+}
+
+function todasLasSesiones(){
+  const out = [];
+  for(const k of claves()){
+    if(k.indexOf(K.ses) !== 0) continue;
+    const s = leer(k);
+    if(s && s.fecha && Array.isArray(s.series)) out.push(s);
+  }
+  out.sort((a,b) => a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : a.dia - b.dia);
+  return out;
+}
+
+function indexarUltimas(){
+  const idx = {};
+  for(const s of todasLasSesiones()){
+    for(const r of s.series){
+      if(!r.hecha) continue;
+      const prev = idx[r.ejercicio];
+      if(!prev || prev.fecha <= s.fecha) idx[r.ejercicio] = { fecha:s.fecha, peso:r.peso, reps:r.reps, rir:r.rir };
+    }
+  }
+  ultimas = idx;
+  escribir(K.ult, ultimas);
+}
+
+/* ---------- render ---------- */
+function pintarDias(){
+  const cont = document.getElementById("dias");
+  cont.textContent = "";
+  for(const b of RUTINA){
+    const bt = document.createElement("button");
+    bt.type = "button"; bt.className = "dia";
+    bt.setAttribute("aria-pressed", String(b.id === dia));
+    const n = document.createElement("b"); n.textContent = "D"+b.id;
+    const s = document.createElement("span"); s.textContent = b.corto;
+    bt.append(n,s);
+    bt.addEventListener("click", () => {
+      if(b.id === dia) return;
+      dia = b.id; escribir(K.dia, dia);
+      cargarSesion(); pintarDias(); pintarLista(); totales();
+    });
+    cont.appendChild(bt);
+  }
+}
+
+function pintarLista(){
+  const lista = document.getElementById("lista");
+  lista.textContent = "";
+  for(const ej of bloque(dia).ejercicios) lista.appendChild(tarjeta(ej));
+}
+
+function tarjeta(ej){
+  const hechas = sesion.series.filter(s => s.ejercicio === ej.n && s.hecha).length;
+  const art = document.createElement("article");
+  art.className = "ej" + (hechas >= ej.s ? " completo" : hechas > 0 ? " parcial" : "");
+
+  const cab = document.createElement("button");
+  cab.type = "button"; cab.className = "ej-cab"; cab.setAttribute("aria-expanded","false");
+
+  const izq = document.createElement("div");
+  const nom = document.createElement("div");
+  nom.className = "ej-nom";
+  nom.textContent = ej.n + (ej.opcional ? " · opcional" : "");
+  const meta = document.createElement("div"); meta.className = "ej-meta";
+  const obj = document.createElement("span"); obj.className = "obj";
+  obj.textContent = ej.sinCarga ? ej.s+" series" : ej.s+" × "+ej.r;
+  meta.appendChild(obj);
+  if(!ej.sinCarga){
+    const u = ultimas[ej.n];
+    const ult = document.createElement("span");
+    if(u){
+      ult.className = "ult";
+      ult.append("última vez ");
+      const b = document.createElement("b");
+      b.textContent = (u.peso ? u.peso+" kg × " : "")+u.reps+" reps";
+      ult.appendChild(b);
+      if(u.rir !== null && u.rir !== undefined) ult.append(" · RIR "+u.rir);
+    }else{
+      ult.className = "nuevo"; ult.textContent = "sin registro previo";
+    }
+    meta.appendChild(ult);
+  }
+  izq.append(nom,meta);
+
+  const cuenta = document.createElement("div");
+  cuenta.className = "cuenta"; cuenta.textContent = hechas+"/"+ej.s;
+  cab.append(izq,cuenta);
+
+  const cuerpo = document.createElement("div");
+  cuerpo.className = "series"; cuerpo.hidden = true;
+  cuerpo.appendChild(cabeceraSeries(ej));
+  for(let i=1;i<=ej.s;i++) cuerpo.appendChild(filaSerie(ej,i,cuenta,art));
+
+  cab.addEventListener("click", () => {
+    const abrir = cuerpo.hidden;
+    cuerpo.hidden = !abrir;
+    cab.setAttribute("aria-expanded", String(abrir));
+  });
+
+  art.append(cab,cuerpo);
+  return art;
+}
+
+function cabeceraSeries(ej){
+  const h = document.createElement("div"); h.className = "cab-serie";
+  for(const x of ["#", ej.sinCarga ? "—" : "Peso", ej.sinCarga ? "Seg." : "Reps", "RIR", ""]){
+    const s = document.createElement("span"); s.textContent = x; h.appendChild(s);
+  }
+  return h;
+}
+
+function campo(unidad,valor,desactivado){
+  const d = document.createElement("div"); d.className = "campo";
+  const i = document.createElement("input");
+  i.type = "number"; i.inputMode = "decimal"; i.step = "0.5"; i.min = "0";
+  if(valor !== null && valor !== undefined) i.value = valor;
+  if(desactivado){ i.disabled = true; i.placeholder = "—"; }
+  const u = document.createElement("u"); u.textContent = unidad;
+  d.append(i,u);
+  return d;
+}
+
+function filaSerie(ej,i,cuenta,art){
+  const dato = serieDe(ej.n,i);
+  const u = ultimas[ej.n];
+  const fila = document.createElement("div");
+  fila.className = "serie" + (dato && dato.hecha ? " hecha" : "");
+
+  const n = document.createElement("div"); n.className = "n"; n.textContent = i;
+  const cPeso = campo("kg", dato ? dato.peso : (u ? u.peso : null), !!ej.sinCarga);
+  const cReps = campo(ej.sinCarga ? "seg" : "reps", dato ? dato.reps : (u ? u.reps : null), false);
+  cPeso.querySelector("input").setAttribute("aria-label", ej.n+" serie "+i+", peso en kilos");
+  cReps.querySelector("input").setAttribute("aria-label", ej.n+" serie "+i+", repeticiones");
+
+  const rir = document.createElement("div"); rir.className = "rir";
+  let rirVal = dato ? dato.rir : (u ? u.rir : null);
+  const botones = [];
+  for(let r=0;r<=4;r++){
+    const b = document.createElement("button");
+    b.type = "button"; b.dataset.r = String(r); b.textContent = r;
+    b.setAttribute("aria-label","RIR "+r);
+    b.setAttribute("aria-pressed", String(rirVal === r));
+    b.addEventListener("click", () => {
+      rirVal = (rirVal === r) ? null : r;
+      for(const o of botones) o.setAttribute("aria-pressed", String(rirVal === Number(o.dataset.r)));
+      if(fila.classList.contains("hecha")) registrar();
+    });
+    botones.push(b); rir.appendChild(b);
+  }
+
+  const chk = document.createElement("button");
+  chk.type = "button"; chk.className = "check"; chk.textContent = "✓";
+  chk.setAttribute("aria-label","Marcar serie "+i+" de "+ej.n+" como hecha");
+  chk.setAttribute("aria-pressed", String(!!(dato && dato.hecha)));
+
+  function valores(){
+    const p = parseFloat(cPeso.querySelector("input").value);
+    const r = parseFloat(cReps.querySelector("input").value);
+    return { peso: ej.sinCarga ? null : (isFinite(p) ? p : null), reps: isFinite(r) ? r : null, rir: rirVal };
+  }
+  function registrar(){
+    const v = valores();
+    const idx = sesion.series.findIndex(s => s.ejercicio === ej.n && s.serie === i);
+    const reg = { ejercicio:ej.n, serie:i, peso:v.peso, reps:v.reps, rir:v.rir, hecha:true };
+    if(idx >= 0) sesion.series[idx] = reg; else sesion.series.push(reg);
+    guardar();
+  }
+
+  chk.addEventListener("click", () => {
+    const marcar = !fila.classList.contains("hecha");
+    if(marcar){
+      if(valores().reps === null){ cReps.querySelector("input").focus(); return; }
+      fila.classList.add("hecha"); registrar();
+    }else{
+      fila.classList.remove("hecha");
+      sesion.series = sesion.series.filter(s => !(s.ejercicio === ej.n && s.serie === i));
+      guardar();
+    }
+    chk.setAttribute("aria-pressed", String(marcar));
+    const hechas = sesion.series.filter(s => s.ejercicio === ej.n && s.hecha).length;
+    cuenta.textContent = hechas+"/"+ej.s;
+    art.classList.toggle("completo", hechas >= ej.s);
+    art.classList.toggle("parcial", hechas > 0 && hechas < ej.s);
+    totales(); estadoCopia();
+  });
+
+  for(const c of [cPeso,cReps]){
+    c.querySelector("input").addEventListener("change", () => {
+      if(fila.classList.contains("hecha")){ registrar(); totales(); }
+    });
+  }
+
+  fila.append(n,cPeso,cReps,rir,chk);
+  return fila;
+}
+
+function totales(){
+  const objetivo = bloque(dia).ejercicios.reduce((a,e) => a + e.s, 0);
+  const hechas = sesion.series.filter(s => s.hecha).length;
+  let ton = 0;
+  for(const s of sesion.series){ if(s.hecha && s.peso && s.reps) ton += s.peso * s.reps; }
+  document.getElementById("st-series").textContent = hechas+"/"+objetivo;
+  document.getElementById("st-tonelaje").textContent = Math.round(ton).toLocaleString("es-ES");
+}
+
+/* ---------- peso corporal ---------- */
+function pesoCorporal(){
+  const inp = document.getElementById("peso");
+  const btn = document.getElementById("peso-btn");
+  const nota = document.getElementById("peso-nota");
+  const cache = leer(K.peso) || {};
+  if(cache[FECHA]) inp.value = cache[FECHA];
+  btn.addEventListener("click", () => {
+    const kg = parseFloat(inp.value);
+    if(!isFinite(kg) || kg < 30 || kg > 200){ inp.focus(); return; }
+    cache[FECHA] = kg; escribir(K.peso, cache);
+    nota.textContent = String(kg).replace(".",",")+" kg guardados para hoy.";
+  });
+}
+
+/* ---------- copia de seguridad ---------- */
+function respaldo(){
+  return {
+    formato: "cuaderno-de-cargas/1",
+    exportado: new Date().toISOString(),
+    sesiones: todasLasSesiones(),
+    peso: leer(K.peso) || {}
+  };
+}
+
+function estadoCopia(){
+  const nota = document.getElementById("copia-nota");
+  const aviso = document.getElementById("copia-aviso");
+  const total = todasLasSesiones().filter(s => s.series.some(r => r.hecha)).length;
+  const ultima = leer(K.copia);
+  const desde = ultima ? total - (ultima.sesiones || 0) : total;
+
+  nota.textContent = ultima
+    ? "Última copia: "+ultima.fecha+" · "+total+" sesiones registradas."
+    : (total ? total+" sesiones registradas y ninguna copia hecha todavía." : "Sin sesiones registradas todavía.");
+
+  if(desde >= AVISO_COPIA){
+    aviso.hidden = false;
+    aviso.textContent = "Llevas "+desde+" sesiones sin exportar. Hazlo ahora: si pierdes el móvil o borras los datos de Safari, se van con él.";
+  }else{
+    aviso.hidden = true;
+  }
+}
+
+function copias(){
+  document.getElementById("exportar").addEventListener("click", () => {
+    const datos = respaldo();
+    const blob = new Blob([JSON.stringify(datos,null,2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "cargas-"+FECHA+".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    escribir(K.copia, { fecha:FECHA, sesiones: datos.sesiones.filter(s => s.series.some(r => r.hecha)).length });
+    estadoCopia();
+  });
+
+  const input = document.getElementById("importar");
+  document.getElementById("importar-btn").addEventListener("click", () => input.click());
+  input.addEventListener("change", () => {
+    const f = input.files && input.files[0];
+    if(!f) return;
+    const lector = new FileReader();
+    lector.onload = () => {
+      const nota = document.getElementById("copia-nota");
+      let datos;
+      try{ datos = JSON.parse(String(lector.result)); }
+      catch(e){ nota.textContent = "Ese archivo no se puede leer. Tiene que ser un .json exportado desde aquí."; return; }
+      if(!datos || !Array.isArray(datos.sesiones)){ nota.textContent = "Ese archivo no es una copia de Cargas."; return; }
+      let n = 0;
+      for(const s of datos.sesiones){
+        if(!s || !s.fecha || !Array.isArray(s.series)) continue;
+        escribir(K.ses+docId(s.fecha, s.dia), s); n++;
+      }
+      if(datos.peso && typeof datos.peso === "object"){
+        const actual = leer(K.peso) || {};
+        escribir(K.peso, Object.assign(actual, datos.peso));
+      }
+      indexarUltimas(); cargarSesion(); pintarLista(); totales(); estadoCopia();
+      nota.textContent = "Restauradas "+n+" sesiones.";
+      input.value = "";
+    };
+    lector.readAsText(f);
+  });
+}
+
+/* ---------- arranque ---------- */
+function fechaLarga(){
+  const d = ["dom","lun","mar","mié","jue","vie","sáb"];
+  const m = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+  return d[hoy.getDay()]+" "+hoy.getDate()+" "+m[hoy.getMonth()];
+}
+
+document.getElementById("fecha").textContent = fechaLarga();
+indexarUltimas();
+cargarSesion();
+pintarDias();
+pintarLista();
+totales();
+pesoCorporal();
+copias();
+estadoCopia();
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}
+</script>
+</body>
+</html>

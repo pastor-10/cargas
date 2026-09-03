@@ -1,0 +1,17 @@
+{
+  "name": "Cargas — cuaderno de entreno",
+  "short_name": "Cargas",
+  "description": "Registro de entrenos: peso, reps y RIR por serie, con la referencia de la última vez.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#12171A",
+  "theme_color": "#12171A",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
