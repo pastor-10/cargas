@@ -179,35 +179,49 @@ Aquí hay una trampa y quiero avisarla antes de construir nada.
 > comidas. La granularidad correcta es *marcar si te lo has comido*, no
 > recalcular macros cada vez.
 
-### 3.1 ⬜ Checklist del día tipo
+### 3.1 ✅ Checklist del día tipo
 
 Las cinco comidas + los 5 g de creatina, marcables. Al final del día ves si
 cumpliste. Eso es el 90% del valor de una app de dieta con el 5% del esfuerzo.
 
-### 3.2 ⬜ Contador de días cumplidos
+### 3.2 ✅ Contador de días cumplidos
 
 Racha simple. En volumen, la constancia con la comida es más determinante que
 la precisión.
 
-### 3.3 ⬜ Las tres opciones de proteína en polvo
+### 3.3 ✅ Las tres opciones de proteína en polvo
 
-Los tres escenarios de la sección 3 del plan (día normal / batido de rescate /
-cacito en la avena) como botones, cada uno ajustando el checklist del día para
-que no descuadres calorías sin darte cuenta.
+Los tres escenarios de la sección 3 del plan como botones, cada uno con su
+menú completo:
 
-### 3.4 ⬜ Lista de la compra
+| Modo | kcal | Proteína | Frente al normal |
+|---|---|---|---|
+| **Normal** | 3.020 | 168 g | — |
+| **Rescate** (batido) | 2.930 | 165 g | −90 kcal · un puñado de nueces lo cuadra |
+| **Cacito** (en la avena) | 3.025 | 169 g | +5 kcal · cuadra solo |
 
-La de Mercadona, marcable, y que se reinicie cada semana.
+Cuadrar el modo Cacito destapó un error del plan: decía quitar 60 g de pollo
+para compensar el cacito, y hacen falta **100 g**. Corregido en la sección 3.
 
-### 3.5 ⬜ Recetas
+### 3.4 ✅ Lista de la compra
+
+Los 26 artículos, agrupados como en el plan, marcables y con la cantidad al
+lado. Se vacía sola cada lunes.
+
+### 3.5 ✅ Recetas
 
 Las seis de batch cooking, consultables desde la cocina.
 
-### 3.6 ⬜ Ajuste de calorías
+### 3.6 ✅ Ajuste de calorías
 
-Cuando la gráfica de peso diga que hay que subir o bajar 150 kcal, que la app
-te diga **en qué alimento concreto** hacerlo ("+40 g de arroz crudo en la
-comida"), no un número abstracto.
+Lee la tendencia de peso de la fase 2 y dice el alimento concreto:
+
+- Vas lento → **+40 g de arroz crudo en la comida** (120 → 160 g).
+- Vas rápido → **quita 25 g de crema de cacahuete del desayuno** (30 → 5 g),
+  que baja 150 kcal sin tocar la proteína.
+
+Con el recordatorio de no ajustar hasta que dos comparaciones seguidas digan lo
+mismo.
 
 ---
 
@@ -282,17 +296,22 @@ Yo iría así, y cada bloque es utilizable por sí solo:
 | ~~3~~ | ✅ 1.5 Máquina ocupada + 1.7 Nota de sesión + 1.3 Crono de tiempo | Hecho |
 | ~~4~~ | ✅ 2.3 Volumen semanal + 2.4 Peso por semanas | Hecho |
 | ~~5~~ | ✅ 2.5 Mesociclo + 2.1 Historial + 2.2 1RM + 2.6 Adherencia | Hecho |
-| **6** | Fase 3 completa | **Siguiente.** Cuando la parte de entreno esté rodada. Meter la dieta antes es dispersarse |
-| **7** | 4.3 Editar rutina + 4.4 Sueño | Cuando cambiemos de bloque, hacia marzo |
+| ~~6~~ | ✅ Fase 3 completa | Hecho |
+| **7** | 4.1 Exportar CSV · 4.3 Editar rutina · 4.4 Sueño | **Siguiente**, hacia marzo o cuando haga falta |
 
-**Fases 1 y 2 hechas. Ahora hace falta lo único que no puedo construir: datos.**
+**Fases 1, 2 y 3 hechas. Lo que falta ahora no lo puedo construir yo: datos.**
 
-La vista de Progreso está entera pero hoy enseña estados vacíos, porque no hay
-nada que dibujar. Sus avisos —volumen por debajo, ritmo de peso, descarga en la
-sexta semana— solo empiezan a valer con tres o cuatro semanas dentro.
+Entreno funciona desde el primer día. Progreso y el ajuste de calorías enseñan
+estados vacíos hasta que haya tres o cuatro semanas dentro — es lo correcto, no
+hay nada que dibujar todavía.
 
-Entrena y registra. La fase 3 (dieta) cuando la parte de entreno esté rodada, y
-lo que aparezca por el camino que no esté en esta lista, mejor señal todavía.
+Queda la fase 4, que es mantenimiento y no urge: exportar en CSV, editar la
+rutina sin tocar código y apuntar sueño y recuperación a mano. Tiene sentido
+hacia marzo, cuando cambiemos de bloque.
+
+A partir de aquí lo que mande debería salir de usarla, no de esta lista. Lo que
+pidas después de tres semanas entrenando valdrá más que cualquier cosa que yo
+haya escrito aquí antes de empezar.
 
 Si en ese momento algo de esta lista te sigue pareciendo importante, lo
 construimos. Y si aparece algo que no está aquí, mejor señal todavía.
