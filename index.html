@@ -308,80 +308,6 @@ th{
 .vol-relleno.ok{background:var(--done)}
 .vacio{font-size:13px; color:var(--ink-3); line-height:1.5; margin:6px 0 0}
 
-/* ---------- dieta ---------- */
-.modos{display:flex; gap:6px; margin-bottom:12px}
-.modo{
-  flex:1; padding:8px 6px; border:1px solid var(--line); border-radius:8px;
-  background:var(--surface); color:var(--ink-2); cursor:pointer; font-family:var(--font-b);
-  font-size:11.5px; line-height:1.25; text-align:center;
-}
-.modo b{display:block; font-family:var(--font-d); font-size:14px; font-weight:700; letter-spacing:.05em; text-transform:uppercase}
-.modo[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
-.modo:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
-
-.comidas{display:flex; flex-direction:column; gap:7px}
-.comida{
-  display:grid; grid-template-columns:38px 1fr auto; gap:10px; align-items:start;
-  padding:10px 11px; border:1px solid var(--line); border-radius:var(--radius);
-  background:var(--surface); cursor:pointer; text-align:left; color:inherit;
-  font-family:var(--font-b); width:100%;
-}
-.comida:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
-.comida[aria-pressed="true"]{border-color:var(--done); background:var(--done-soft)}
-.comida-tick{
-  width:38px; height:38px; border-radius:8px; border:1px solid var(--line);
-  background:var(--ground); display:flex; align-items:center; justify-content:center;
-  font-size:19px; color:var(--ink-3); line-height:1;
-}
-.comida[aria-pressed="true"] .comida-tick{background:var(--done); border-color:var(--done); color:#fff}
-.comida-nom{font-weight:600; font-size:14px; line-height:1.25}
-.comida-det{font-size:12px; color:var(--ink-2); line-height:1.4; margin-top:3px}
-.comida[aria-pressed="true"] .comida-det{color:var(--done)}
-.comida-kcal{
-  font-family:var(--font-d); font-size:15px; font-weight:600; letter-spacing:.02em;
-  color:var(--ink-3); font-variant-numeric:tabular-nums; white-space:nowrap; text-align:right;
-}
-.comida-kcal small{display:block; font-size:11px; font-weight:500}
-
-.progreso-dia{margin-top:12px}
-.marcador{height:10px; border-radius:5px; background:var(--surface-2); overflow:hidden; margin-top:7px}
-.marcador div{height:100%; border-radius:5px; background:var(--accent); transition:width .18s}
-.marcador div.lleno{background:var(--done)}
-
-.compra{display:flex; flex-direction:column; gap:2px}
-.compra h3{
-  font-family:var(--font-d); font-size:13px; font-weight:600; letter-spacing:.08em;
-  text-transform:uppercase; color:var(--ink-3); margin:12px 0 4px;
-}
-.compra h3:first-child{margin-top:2px}
-.item{
-  display:flex; align-items:center; gap:10px; width:100%; padding:8px 4px;
-  border:0; border-bottom:1px solid var(--line-soft); background:none; cursor:pointer;
-  text-align:left; color:inherit; font-family:var(--font-b); font-size:13.5px; line-height:1.3;
-}
-.item:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
-.item i{
-  width:20px; height:20px; flex:none; border:1.5px solid var(--line); border-radius:5px;
-  display:flex; align-items:center; justify-content:center; font-size:13px;
-  font-style:normal; color:transparent; line-height:1;
-}
-.item[aria-pressed="true"] i{background:var(--done); border-color:var(--done); color:#fff}
-.item[aria-pressed="true"] span{text-decoration:line-through; color:var(--ink-3)}
-.item b{margin-left:auto; font-weight:500; color:var(--ink-3); font-variant-numeric:tabular-nums; white-space:nowrap}
-
-.receta{border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; margin-bottom:7px; background:var(--surface)}
-.receta-cab{
-  width:100%; display:flex; justify-content:space-between; align-items:baseline; gap:10px;
-  padding:11px 12px; background:none; border:0; cursor:pointer; text-align:left;
-  color:inherit; font-family:var(--font-b);
-}
-.receta-cab:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
-.receta-cab b{font-weight:600; font-size:14px}
-.receta-cab span{
-  font-family:var(--font-d); font-size:12.5px; letter-spacing:.05em; text-transform:uppercase;
-  color:var(--ink-3); white-space:nowrap;
-}
-.receta-txt{padding:0 12px 12px; font-size:13px; line-height:1.55; color:var(--ink-2); border-top:1px solid var(--line-soft); padding-top:10px}
 select{
   width:100%; padding:10px; border:1px solid var(--line); border-radius:8px;
   background:var(--surface); color:var(--ink); font-family:var(--font-b); font-size:14px;
@@ -409,7 +335,6 @@ select:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:
     <div class="vistas" role="group" aria-label="Vista">
       <button type="button" class="vista-bt" id="bt-entreno" aria-pressed="true">Entreno</button>
       <button type="button" class="vista-bt" id="bt-progreso" aria-pressed="false">Progreso</button>
-      <button type="button" class="vista-bt" id="bt-dieta" aria-pressed="false">Dieta</button>
     </div>
     <div class="dias" id="dias" role="group" aria-label="Día de entrenamiento"></div>
   </header>
@@ -533,44 +458,6 @@ select:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:
 
   </div>
 
-  <div id="vista-dieta" hidden>
-
-    <section class="card">
-      <h2>Hoy</h2>
-      <div class="modos" id="modos" role="group" aria-label="Modo del día"></div>
-      <div class="comidas" id="comidas"></div>
-      <div class="progreso-dia">
-        <div class="hero" id="dia-hero"></div>
-        <div class="marcador"><div id="dia-barra" style="width:0%"></div></div>
-        <p class="nota" id="dia-nota"></p>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Constancia</h2>
-      <div id="racha"></div>
-    </section>
-
-    <section class="card">
-      <h2>Ajuste de calorías</h2>
-      <div id="ajuste"></div>
-    </section>
-
-    <section class="card">
-      <h2>Lista de la compra</h2>
-      <p class="nota" style="margin-top:0" id="compra-cab"></p>
-      <div class="compra" id="compra"></div>
-      <div class="fila" style="margin-top:12px">
-        <button class="btn sec" id="compra-reset" type="button">Vaciar lista</button>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Recetas</h2>
-      <div id="recetas"></div>
-    </section>
-
-  </div>
   </main>
 </div>
 
@@ -1893,323 +1780,6 @@ function dibujarEjercicio(nombre){
 }
 
 /* ============================================================
-   FASE 3 — DIETA
-   Las cifras son estimaciones de la sección 2 del plan. No es un
-   contador de calorías: el día tipo es fijo y aquí solo se marca.
-   ============================================================ */
-const MODOS = [
-  { k:"A", n:"Normal",  d:"Sin batido" },
-  { k:"B", n:"Rescate", d:"Batido en vez de merienda y cena ligera" },
-  { k:"C", n:"Cacito",  d:"Proteína en la avena" }
-];
-
-const CREATINA = { id:"creatina", n:"Creatina", d:"5 g de monohidrato. También los días de descanso", kcal:0, p:0 };
-
-const COMIDAS = {
-  A:[
-    { id:"desayuno", n:"Desayuno", d:"100 g de avena · 250 ml de leche entera · 1 plátano · 30 g de crema de cacahuete", kcal:820, p:28 },
-    { id:"comida",   n:"Comida",   d:"180 g de pollo · 120 g de arroz (en crudo) · verdura · 1 cucharada de aceite", kcal:770, p:50 },
-    { id:"merienda", n:"Merienda", d:"200 g de yogur griego · 30 g de nueces o almendras · 1 fruta", kcal:450, p:25 },
-    { id:"cena",     n:"Cena",     d:"180 g de ternera 5%, salmón o pescado · 350 g de patata o 100 g de pasta · verdura + aceite", kcal:700, p:45 },
-    { id:"noche",    n:"Antes de dormir", d:"250 ml de leche entera · 2 rebanadas de pan integral con pavo o queso fresco", kcal:280, p:20 },
-    CREATINA
-  ],
-  B:[
-    { id:"desayuno", n:"Desayuno", d:"100 g de avena · 250 ml de leche entera · 1 plátano · 30 g de crema de cacahuete", kcal:820, p:28 },
-    { id:"comida",   n:"Comida",   d:"180 g de pollo · 120 g de arroz (en crudo) · verdura · 1 cucharada de aceite", kcal:770, p:50 },
-    { id:"cena",     n:"Cena",     d:"180 g de ternera 5%, salmón o pescado · 350 g de patata o 100 g de pasta · verdura + aceite", kcal:700, p:45 },
-    { id:"batido",   n:"Batido de rescate", d:"1 cacito · 300 ml de leche entera · 60 g de avena · 1 plátano. Sustituye merienda y toma de noche", kcal:640, p:42 },
-    CREATINA
-  ],
-  C:[
-    { id:"desayuno", n:"Desayuno con cacito", d:"100 g de avena · 250 ml de leche entera · 1 plátano · 30 g de crema de cacahuete · 1 cacito de proteína", kcal:935, p:52 },
-    { id:"comida",   n:"Comida (pollo reducido)", d:"80 g de pollo · 120 g de arroz (en crudo) · verdura · 1 cucharada de aceite", kcal:660, p:27 },
-    { id:"merienda", n:"Merienda", d:"200 g de yogur griego · 30 g de nueces o almendras · 1 fruta", kcal:450, p:25 },
-    { id:"cena",     n:"Cena",     d:"180 g de ternera 5%, salmón o pescado · 350 g de patata o 100 g de pasta · verdura + aceite", kcal:700, p:45 },
-    { id:"noche",    n:"Antes de dormir", d:"250 ml de leche entera · 2 rebanadas de pan integral con pavo o queso fresco", kcal:280, p:20 },
-    CREATINA
-  ]
-};
-
-const NOTA_MODO = {
-  A:"El día tipo completo. Es el que deberías hacer casi siempre.",
-  B:"Para cuando no te entra sólido o sales tarde. Quedan ~90 kcal por debajo del día normal: un puñado de nueces lo cuadra.",
-  C:"Cambias proteína sólida por líquida sin sumar calorías: el cacito entra en la avena y sale el pollo equivalente de la comida."
-};
-
-const COMPRA = [
-  { g:"Proteína", items:[
-    ["Pechuga de pollo","1,5 kg"], ["Carne picada de ternera 5%","600 g"],
-    ["Salmón (fresco o congelado)","400 g"], ["Huevos","2 docenas"],
-    ["Atún al natural","6 latas"], ["Pavo o jamón cocido","300 g"],
-    ["Yogur griego natural","1,5 kg"], ["Queso batido 0% o requesón","500 g"],
-    ["Leche entera","4 L"]
-  ]},
-  { g:"Hidratos", items:[
-    ["Copos de avena","1 kg"], ["Arroz largo","1 kg"], ["Pasta","1 kg"],
-    ["Patatas","3 kg"], ["Pan de molde integral","1 paquete"],
-    ["Garbanzos y lentejas de bote","4 botes"]
-  ]},
-  { g:"Grasas", items:[
-    ["Aceite de oliva virgen extra","1 L"], ["Crema de cacahuete","1 bote"],
-    ["Nueces y almendras crudas","500 g"]
-  ]},
-  { g:"Fruta y verdura", items:[
-    ["Plátanos","10-12"], ["Manzanas o naranjas","1 kg"],
-    ["Verdura congelada","2 bolsas"], ["Espinacas frescas","1 bolsa"],
-    ["Tomates, cebollas, ajos, pimiento","al gusto"], ["Tomate triturado","2 briks"]
-  ]},
-  { g:"Extras", items:[
-    ["Especias: pimentón, orégano, comino, ajo","—"], ["Caldo de pollo o verduras","—"]
-  ]}
-];
-
-const RECETAS = [
-  { n:"Avena de la noche anterior", t:"5 min · 5 raciones",
-    p:"Reparte en 5 táper: 100 g de avena + 250 ml de leche + una cucharada de crema de cacahuete en cada uno. Remueve y a la nevera. Por la mañana añades el plátano cortado. Aguanta 4 días.\n\nCon proteína: añade el cacito por la mañana, no la noche anterior — si reposa toda la noche queda con textura de cemento." },
-  { n:"Bandeja de pollo al horno", t:"40 min · 4 raciones",
-    p:"Trocea 800 g de pollo y mézclalo en la bandeja con pimiento, cebolla y calabacín, 2 cucharadas de aceite, pimentón, ajo en polvo, orégano y sal. Horno a 200 °C, 25-30 min. Reparte en táper con arroz ya cocido (500 g de arroz crudo para las 4 raciones)." },
-  { n:"Boloñesa de ternera", t:"30 min · 4 raciones",
-    p:"Sofríe cebolla y ajo picados, añade 600 g de carne picada hasta que se dore, echa dos briks de tomate triturado, orégano y sal, y deja 15 min a fuego bajo. Congela la mitad. Sirve con 100 g de pasta en crudo por ración." },
-  { n:"Salmón con patata al horno", t:"35 min · 2 raciones",
-    p:"Patatas en rodajas finas al horno 20 min a 200 °C. Pon los lomos de salmón encima con aceite, ajo y limón, y 12-15 min más. La cena más rápida de la semana." },
-  { n:"Tortilla de patata con espinacas", t:"25 min · 3 raciones",
-    p:"6 huevos, 400 g de patata y un puñado grande de espinacas. Unos 28 g de proteína por ración y se come fría, así que es perfecta para llevar a la universidad." },
-  { n:"Bowl de garbanzos y atún", t:"5 min · 1 ración",
-    p:"Bote de garbanzos escurrido + 2 latas de atún + tomate + cebolla + un chorro de aceite. Tu comida de emergencia cuando no has cocinado. Unos 45 g de proteína en cinco minutos." },
-  { n:"Batido de rescate", t:"2 min · 1 ración",
-    p:"1 cacito de proteína + 300 ml de leche entera + 60 g de avena + 1 plátano. Batidora o shaker (con shaker la avena queda con grumos, se bebe igual). ~640 kcal y ~42 g de proteína." }
-];
-
-function dietaDe(f){
-  const d = leer("gc.dieta."+f);
-  return (d && typeof d === "object") ? d : { modo:"A", hecho:{} };
-}
-function guardarDieta(f,d){ escribir("gc.dieta."+f, d); }
-
-function pintarDieta(){
-  const d = dietaDe(FECHA);
-  const lista = COMIDAS[d.modo] || COMIDAS.A;
-
-  const modos = document.getElementById("modos");
-  modos.textContent = "";
-  for(const m of MODOS){
-    const b = document.createElement("button");
-    b.type = "button"; b.className = "modo";
-    b.setAttribute("aria-pressed", String(m.k === d.modo));
-    const t = document.createElement("b"); t.textContent = m.n;
-    const s = document.createElement("span"); s.textContent = m.d;
-    b.append(t,s);
-    b.addEventListener("click", () => {
-      const act = dietaDe(FECHA);
-      act.modo = m.k;
-      guardarDieta(FECHA, act);
-      pintarDieta();
-    });
-    modos.appendChild(b);
-  }
-
-  const cont = document.getElementById("comidas");
-  cont.textContent = "";
-  for(const c of lista){
-    const b = document.createElement("button");
-    b.type = "button"; b.className = "comida";
-    const marcado = !!d.hecho[c.id];
-    b.setAttribute("aria-pressed", String(marcado));
-
-    const tick = document.createElement("div"); tick.className = "comida-tick"; tick.textContent = "✓";
-    const mid = document.createElement("div");
-    const nom = document.createElement("div"); nom.className = "comida-nom"; nom.textContent = c.n;
-    const det = document.createElement("div"); det.className = "comida-det"; det.textContent = c.d;
-    mid.append(nom, det);
-    const kc = document.createElement("div"); kc.className = "comida-kcal";
-    if(c.kcal){
-      kc.textContent = c.kcal.toLocaleString("es-ES");
-      kc.appendChild(Object.assign(document.createElement("small"),{textContent:c.p+" g P"}));
-    }else{
-      kc.textContent = "5 g";
-    }
-    b.append(tick, mid, kc);
-
-    b.addEventListener("click", () => {
-      const act = dietaDe(FECHA);
-      if(act.hecho[c.id]) delete act.hecho[c.id]; else act.hecho[c.id] = true;
-      guardarDieta(FECHA, act);
-      pintarDieta();
-      pintarRacha();
-    });
-    cont.appendChild(b);
-  }
-
-  const conKcal = lista.filter(c => c.kcal);
-  const totalK = conKcal.reduce((a,c)=>a+c.kcal,0);
-  const totalP = conKcal.reduce((a,c)=>a+c.p,0);
-  const hechoK = conKcal.filter(c => d.hecho[c.id]).reduce((a,c)=>a+c.kcal,0);
-  const hechoP = conKcal.filter(c => d.hecho[c.id]).reduce((a,c)=>a+c.p,0);
-  const todo = lista.every(c => d.hecho[c.id]);
-
-  const hero = document.getElementById("dia-hero");
-  hero.textContent = "";
-  const b = document.createElement("b");
-  b.textContent = hechoK.toLocaleString("es-ES")+" kcal";
-  const sp = document.createElement("span");
-  sp.textContent = "de "+totalK.toLocaleString("es-ES")+" · "+hechoP+" g de proteína de "+totalP;
-  hero.append(b, sp);
-
-  const barra = document.getElementById("dia-barra");
-  barra.style.width = (totalK ? (hechoK/totalK)*100 : 0)+"%";
-  barra.classList.toggle("lleno", todo);
-
-  const nota = document.getElementById("dia-nota");
-  nota.textContent = todo
-    ? "Día cumplido. La creatina también cuenta."
-    : NOTA_MODO[d.modo] + " Son estimaciones: el número que manda es la báscula, no esta suma.";
-}
-
-function pintarRacha(){
-  const cont = document.getElementById("racha");
-  cont.textContent = "";
-  let racha = 0;
-  const d0 = aDate(FECHA);
-  for(let i=0;i<400;i++){
-    const dd = new Date(d0.getTime() - i*DIA_MS);
-    const f = dd.getFullYear()+"-"+pad(dd.getMonth()+1)+"-"+pad(dd.getDate());
-    const d = leer("gc.dieta."+f);
-    if(!d){ if(i===0) continue; break; }
-    const lista = COMIDAS[d.modo] || COMIDAS.A;
-    if(lista.every(c => d.hecho && d.hecho[c.id])) racha++;
-    else if(i > 0) break;
-    else continue;
-  }
-  let total = 0;
-  for(const k of claves()){
-    if(k.indexOf("gc.dieta.") !== 0) continue;
-    const d = leer(k);
-    if(!d) continue;
-    const lista = COMIDAS[d.modo] || COMIDAS.A;
-    if(lista.every(c => d.hecho && d.hecho[c.id])) total++;
-  }
-
-  if(!total && !racha){
-    vacio(cont, "Todavía no has cerrado ningún día completo. Marca las cinco comidas y la creatina y empieza a contar.");
-    return;
-  }
-  const hero = document.createElement("div"); hero.className = "hero";
-  const b = document.createElement("b"); b.textContent = racha+(racha===1?" día":" días");
-  const sp = document.createElement("span"); sp.textContent = "seguidos · "+total+" en total";
-  hero.append(b, sp);
-  cont.appendChild(hero);
-
-  const p = document.createElement("p");
-  p.className = "nota";
-  p.textContent = "En volumen la constancia con la comida pesa más que la precisión. Un día flojo no rompe nada; tres semanas flojas sí.";
-  cont.appendChild(p);
-}
-
-function pintarAjuste(){
-  const cont = document.getElementById("ajuste");
-  cont.textContent = "";
-  const utiles = semanasDePeso().filter(s => s.n >= 2);
-  if(utiles.length < 2){
-    vacio(cont, "Hacen falta dos semanas con 2 o más pesajes cada una para saber si hay que tocar las calorías. Hasta entonces: 3.000 kcal y no toques nada.");
-    return;
-  }
-  const a = utiles[utiles.length-2], b = utiles[utiles.length-1];
-  const ritmo = (b.media - a.media)/Math.max(1, diasEntre(a.semana,b.semana)/7);
-
-  const hero = document.createElement("div"); hero.className = "hero";
-  const big = document.createElement("b");
-  big.textContent = (ritmo>=0?"+":"−")+fmt(Math.abs(Math.round(ritmo*100)/100))+" kg";
-  const sp = document.createElement("span"); sp.textContent = "por semana · objetivo +0,25";
-  hero.append(big,sp);
-  cont.appendChild(hero);
-
-  const chip = document.createElement("span");
-  const p = document.createElement("p"); p.className = "nota";
-  if(ritmo < 0.15){
-    chip.className = "chip warn"; chip.textContent = "Subir 150 kcal";
-    p.innerHTML = "Concretamente: <b>+40 g de arroz crudo en la comida</b> (120 → 160 g). Son unas 145 kcal y no cambia nada más del día.";
-  }else if(ritmo > 0.5){
-    chip.className = "chip warn"; chip.textContent = "Bajar 150 kcal";
-    p.innerHTML = "Concretamente: <b>quita 25 g de crema de cacahuete del desayuno</b> (30 → 5 g). Son unas 150 kcal menos sin tocar la proteína.";
-  }else{
-    chip.className = "chip ok"; chip.textContent = "En rango";
-    p.textContent = "Vas al ritmo previsto. No cambies nada durante al menos dos semanas más.";
-  }
-  cont.appendChild(chip);
-  cont.appendChild(p);
-
-  const av = document.createElement("p");
-  av.className = "nota";
-  av.textContent = "Ajusta solo si la próxima comparación repite el mismo diagnóstico. Un dato suelto no basta, y el primer mes es agua.";
-  cont.appendChild(av);
-}
-
-function pintarCompra(){
-  const cab = document.getElementById("compra-cab");
-  const cont = document.getElementById("compra");
-  const lunes = lunesDe(FECHA);
-  let estado = leer("gc.compra");
-  if(!estado || estado.semana !== lunes){ estado = { semana:lunes, marcado:{} }; escribir("gc.compra", estado); }
-
-  cont.textContent = "";
-  let total = 0, hechos = 0;
-  for(const bloque of COMPRA){
-    const h = document.createElement("h3"); h.textContent = bloque.g;
-    cont.appendChild(h);
-    for(const [nombre, cant] of bloque.items){
-      total++;
-      const id = bloque.g+"|"+nombre;
-      const marcado = !!estado.marcado[id];
-      if(marcado) hechos++;
-      const b = document.createElement("button");
-      b.type = "button"; b.className = "item";
-      b.setAttribute("aria-pressed", String(marcado));
-      const i = document.createElement("i"); i.textContent = "✓";
-      const s = document.createElement("span"); s.textContent = nombre;
-      const q = document.createElement("b"); q.textContent = cant;
-      b.append(i,s,q);
-      b.addEventListener("click", () => {
-        const e = leer("gc.compra") || { semana:lunes, marcado:{} };
-        if(e.marcado[id]) delete e.marcado[id]; else e.marcado[id] = true;
-        escribir("gc.compra", e);
-        pintarCompra();
-      });
-      cont.appendChild(b);
-    }
-  }
-  cab.textContent = "Semana del "+cortaFecha(lunes)+" · "+hechos+" de "+total+" cogidos. Se vacía sola cada lunes. Unos 55-70 € en una vuelta.";
-}
-
-function pintarRecetas(){
-  const cont = document.getElementById("recetas");
-  if(cont.dataset.listo) return;
-  cont.dataset.listo = "1";
-  for(const r of RECETAS){
-    const art = document.createElement("article"); art.className = "receta";
-    const cab = document.createElement("button");
-    cab.type = "button"; cab.className = "receta-cab"; cab.setAttribute("aria-expanded","false");
-    const b = document.createElement("b"); b.textContent = r.n;
-    const s = document.createElement("span"); s.textContent = r.t;
-    cab.append(b,s);
-    const txt = document.createElement("div"); txt.className = "receta-txt"; txt.hidden = true;
-    for(const par of r.p.split("\n\n")){
-      const p = document.createElement("p");
-      p.style.margin = "0 0 8px";
-      p.textContent = par;
-      txt.appendChild(p);
-    }
-    cab.addEventListener("click", () => {
-      const abrir = txt.hidden;
-      txt.hidden = !abrir;
-      cab.setAttribute("aria-expanded", String(abrir));
-    });
-    art.append(cab,txt);
-    cont.appendChild(art);
-  }
-}
-
-/* ============================================================
    FASE 4 — LOS DATOS
    ============================================================ */
 
@@ -2499,24 +2069,14 @@ function pintarProgreso(){
   pintarHistorial();
 }
 
-function pintarVistaDieta(){
-  pintarDieta();
-  pintarRacha();
-  pintarAjuste();
-  pintarCompra();
-  pintarRecetas();
-}
-
 function vistas(){
   const bts = {
     entreno: document.getElementById("bt-entreno"),
-    progreso: document.getElementById("bt-progreso"),
-    dieta: document.getElementById("bt-dieta")
+    progreso: document.getElementById("bt-progreso")
   };
   const vs = {
     entreno: document.getElementById("vista-entreno"),
-    progreso: document.getElementById("vista-progreso"),
-    dieta: document.getElementById("vista-dieta")
+    progreso: document.getElementById("vista-progreso")
   };
   const dias = document.getElementById("dias");
 
@@ -2525,15 +2085,9 @@ function vistas(){
     for(const k in vs) vs[k].hidden = (k !== cual);
     dias.hidden = (cual !== "entreno");
     if(cual === "progreso"){ indexarUltimas(); pintarProgreso(); }
-    if(cual === "dieta") pintarVistaDieta();
     window.scrollTo(0,0);
   }
   for(const k in bts) bts[k].addEventListener("click", () => ir(k));
-
-  document.getElementById("compra-reset").addEventListener("click", () => {
-    escribir("gc.compra", { semana:lunesDe(FECHA), marcado:{} });
-    pintarCompra();
-  });
 
   document.getElementById("meso-reset").addEventListener("click", () => {
     escribir("gc.meso", FECHA);

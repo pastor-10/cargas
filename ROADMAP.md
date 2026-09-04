@@ -3,7 +3,7 @@
 Plan de evolución de la app. Ordenado por **valor real durante un entreno**, no
 por lo divertido que sea de programar.
 
-Estado: `⬜ pendiente` · `🟨 en curso` · `✅ hecho`
+Estado: `⬜ pendiente` · `🟨 en curso` · `✅ hecho` · `🅿️ aparcado`
 
 ---
 
@@ -169,9 +169,18 @@ Casi siempre el problema no es el programa, es cuántas veces fuiste.
 
 ---
 
-## Fase 3 — Dieta
+## Fase 3 — Dieta 🅿️ *aparcada*
 
-Aquí hay una trampa y quiero avisarla antes de construir nada.
+**Construida y retirada de la app el 4 de septiembre de 2026, a petición de
+Guillem: no acababa de convencerle.** El código sigue entero en el historial de
+git (commit «Fase 3 del roadmap: dieta»), así que devolverla es revertir, no
+reescribir.
+
+Lo que sí se queda: **los datos que hubieras marcado siguen guardados y siguen
+entrando en la copia de seguridad.** Si algún día vuelve, vuelve con tu
+histórico intacto.
+
+Lo que había, por si sirve para decidir qué cambiar antes de reponerla:
 
 > **No vamos a hacer un contador de calorías.** Pesar cada alimento y buscarlo
 > en una base de datos es exactamente lo que hace que la gente abandone a las
@@ -179,17 +188,17 @@ Aquí hay una trampa y quiero avisarla antes de construir nada.
 > comidas. La granularidad correcta es *marcar si te lo has comido*, no
 > recalcular macros cada vez.
 
-### 3.1 ✅ Checklist del día tipo
+### 3.1 🅿️ Checklist del día tipo
 
 Las cinco comidas + los 5 g de creatina, marcables. Al final del día ves si
 cumpliste. Eso es el 90% del valor de una app de dieta con el 5% del esfuerzo.
 
-### 3.2 ✅ Contador de días cumplidos
+### 3.2 🅿️ Contador de días cumplidos
 
 Racha simple. En volumen, la constancia con la comida es más determinante que
 la precisión.
 
-### 3.3 ✅ Las tres opciones de proteína en polvo
+### 3.3 🅿️ Las tres opciones de proteína en polvo
 
 Los tres escenarios de la sección 3 del plan como botones, cada uno con su
 menú completo:
@@ -203,16 +212,16 @@ menú completo:
 Cuadrar el modo Cacito destapó un error del plan: decía quitar 60 g de pollo
 para compensar el cacito, y hacen falta **100 g**. Corregido en la sección 3.
 
-### 3.4 ✅ Lista de la compra
+### 3.4 🅿️ Lista de la compra
 
 Los 26 artículos, agrupados como en el plan, marcables y con la cantidad al
 lado. Se vacía sola cada lunes.
 
-### 3.5 ✅ Recetas
+### 3.5 🅿️ Recetas
 
 Las seis de batch cooking, consultables desde la cocina.
 
-### 3.6 ✅ Ajuste de calorías
+### 3.6 🅿️ Ajuste de calorías
 
 Lee la tendencia de peso de la fase 2 y dice el alimento concreto:
 
@@ -316,14 +325,15 @@ Yo iría así, y cada bloque es utilizable por sí solo:
 | ~~3~~ | ✅ 1.5 Máquina ocupada + 1.7 Nota de sesión + 1.3 Crono de tiempo | Hecho |
 | ~~4~~ | ✅ 2.3 Volumen semanal + 2.4 Peso por semanas | Hecho |
 | ~~5~~ | ✅ 2.5 Mesociclo + 2.1 Historial + 2.2 1RM + 2.6 Adherencia | Hecho |
-| ~~6~~ | ✅ Fase 3 completa | Hecho |
+| ~~6~~ | 🅿️ Fase 3 | Hecha y aparcada — ver arriba |
 | ~~7~~ | ✅ Fase 4 completa | Hecho |
 
-**El roadmap está terminado.** Las cuatro fases hechas, menos 1.6 (reordenar
-arrastrando), aplazado a propósito por frágil e innecesario.
+**El roadmap está terminado.** Fases 1, 2 y 4 en la app; la 3 (dieta) hecha pero
+retirada hasta que esté mejor pensada. Fuera queda 1.6 (reordenar arrastrando),
+aplazado a propósito por frágil e innecesario.
 
-Lo que falta ahora no lo puedo construir yo: **datos**. Entreno y Dieta
-funcionan desde el primer día. Progreso y el ajuste de calorías enseñan estados
+Lo que falta ahora no lo puedo construir yo: **datos**. Entreno funciona desde
+el primer día. Progreso y el ajuste de calorías enseñan estados
 vacíos hasta que haya tres o cuatro semanas dentro — es lo correcto, no hay nada
 que dibujar todavía.
 
