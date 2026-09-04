@@ -114,18 +114,21 @@ es la mitad del contexto cuando analice por qué una semana salió mal.
 
 Ver si esto está funcionando. Lo miras en el sofá, no en el gimnasio.
 
-### 2.1 ⬜ Historial por ejercicio
+Vive en su propia pestaña **Progreso**, separada de Entreno: el camino de
+registrar una serie no se toca.
+
+### 2.1 ✅ Historial por ejercicio
 
 Tocar el nombre del ejercicio → sus últimas sesiones en una lista, y una
 gráfica de la carga en el tiempo. La pregunta "¿estoy progresando en haka?"
 contestada en un toque.
 
-### 2.2 ⬜ 1RM estimado
+### 2.2 ✅ 1RM estimado
 
 Fórmula de Epley sobre las series pesadas de los básicos. Una métrica única de
 fuerza que no depende del rango de reps de ese día. Con su curva.
 
-### 2.3 ⬜ Volumen semanal por grupo muscular
+### 2.3 ✅ Volumen semanal por grupo muscular
 
 **La más valiosa de esta fase.** Compara tus series reales con la tabla
 objetivo del plan:
@@ -139,20 +142,27 @@ Isquios             7 / 11  ⚠
 Detecta el problema más común y más invisible: que las máquinas estén ocupadas
 y lleves tres semanas haciendo dos tercios del volumen que crees.
 
-### 2.4 ⬜ Peso corporal con media móvil
+El mapeo de ejercicio a grupo muscular reproduce **exactamente** la tabla de la
+sección 6 del plan — hay una prueba que suma los cinco días completos y compara
+los trece grupos uno a uno.
 
-Tu peso diario es ruido. La media de 7 días es la señal. La gráfica debe
-mostrar la media, el objetivo (+0,25 kg/semana) y si vas por encima o por
-debajo. Con el aviso de "llevas dos semanas sin subir → +150 kcal" de la
-sección 1 del plan.
+### 2.4 ✅ Peso corporal por semanas
 
-### 2.5 ⬜ Semana del mesociclo
+Tu peso diario es ruido; la media de una semana es la señal. Como solo tienes
+báscula una semana de cada dos, la app **promedia cada semana que tenga 2 o más
+pesajes** y compara con la anterior semana útil, dividiendo por las semanas
+transcurridas. Las semanas sin báscula no aparecen y no restan.
+
+Muestra el ritmo en kg/semana frente al objetivo de +0,25, la gráfica de medias
+contra la trayectoria objetivo, y el ajuste que toca (+150 / −150 kcal / nada).
+
+### 2.5 ✅ Semana del mesociclo
 
 Contador de la semana actual, el **RIR objetivo** que toca (3 · 3 · 2 · 2 · 1-0)
 y el aviso de descarga al llegar a la sexta. Ahora mismo eso lo tienes que
 llevar en la cabeza.
 
-### 2.6 ⬜ Adherencia
+### 2.6 ✅ Adherencia
 
 Cuántas sesiones planificadas has hecho este mes. Sin dramatizar, solo el dato.
 Casi siempre el problema no es el programa, es cuántas veces fuiste.
@@ -270,15 +280,19 @@ Yo iría así, y cada bloque es utilizable por sí solo:
 | ~~1~~ | ✅ 1.1 Cronómetro + 1.2 Pantalla encendida | Hecho |
 | ~~2~~ | ✅ 1.4 Sugerencia de carga | Hecho |
 | ~~3~~ | ✅ 1.5 Máquina ocupada + 1.7 Nota de sesión + 1.3 Crono de tiempo | Hecho |
-| **4** | 2.3 Volumen semanal + 2.4 Peso con media móvil | **Siguiente.** Cuando tengas 4-6 semanas de datos y haya algo que mirar |
-| **5** | 2.5 Mesociclo + 2.1 Historial por ejercicio | Ya con el hábito montado |
-| **6** | Fase 3 completa | Cuando la parte de entreno esté rodada. Meter la dieta antes es dispersarse |
+| ~~4~~ | ✅ 2.3 Volumen semanal + 2.4 Peso por semanas | Hecho |
+| ~~5~~ | ✅ 2.5 Mesociclo + 2.1 Historial + 2.2 1RM + 2.6 Adherencia | Hecho |
+| **6** | Fase 3 completa | **Siguiente.** Cuando la parte de entreno esté rodada. Meter la dieta antes es dispersarse |
 | **7** | 4.3 Editar rutina + 4.4 Sueño | Cuando cambiemos de bloque, hacia marzo |
 
-**La fase 1 está entera y el resto no corre prisa.** Lo de la fase 2 solo tiene
-sentido con datos dentro: hoy no habría nada que dibujar. Empieza a entrenar y a
-registrar; dentro de tres semanas sabrás por experiencia qué echas de menos de
-verdad, y casi nunca es lo que uno cree antes de empezar.
+**Fases 1 y 2 hechas. Ahora hace falta lo único que no puedo construir: datos.**
+
+La vista de Progreso está entera pero hoy enseña estados vacíos, porque no hay
+nada que dibujar. Sus avisos —volumen por debajo, ritmo de peso, descarga en la
+sexta semana— solo empiezan a valer con tres o cuatro semanas dentro.
+
+Entrena y registra. La fase 3 (dieta) cuando la parte de entreno esté rodada, y
+lo que aparezca por el camino que no esté en esta lista, mejor señal todavía.
 
 Si en ese momento algo de esta lista te sigue pareciendo importante, lo
 construimos. Y si aparece algo que no está aquí, mejor señal todavía.
