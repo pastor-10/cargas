@@ -308,6 +308,46 @@ th{
 .vol-relleno.ok{background:var(--done)}
 .vacio{font-size:13px; color:var(--ink-3); line-height:1.5; margin:6px 0 0}
 
+/* ---------- calendario ---------- */
+.cal-caja{display:flex; gap:6px; margin-top:10px}
+.cal-dias{
+  display:grid; grid-template-rows:repeat(7,14px); gap:3px; flex:none;
+  font-family:var(--font-d); font-size:10px; font-weight:600; color:var(--ink-3);
+  letter-spacing:.04em; align-items:center;
+}
+.cal-scroll{overflow-x:auto; scrollbar-width:none; flex:1}
+.cal-scroll::-webkit-scrollbar{display:none}
+.cal-meses{
+  display:grid; grid-auto-flow:column; gap:3px; margin-bottom:4px;
+  font-family:var(--font-d); font-size:10px; font-weight:600; color:var(--ink-3);
+  letter-spacing:.05em; text-transform:uppercase;
+}
+.cal-meses span{grid-row:1; white-space:nowrap; overflow:hidden}
+.cal{display:grid; grid-auto-flow:column; grid-template-rows:repeat(7,14px); gap:3px}
+.cal button{
+  width:14px; height:14px; padding:0; border:0; border-radius:3px;
+  background:var(--surface-2); cursor:pointer;
+}
+.cal button.on{background:var(--accent)}
+.cal button.futuro{background:transparent; box-shadow:inset 0 0 0 1px var(--line-soft); cursor:default}
+.cal button.hoy{box-shadow:0 0 0 2px var(--ink)}
+.cal button.on.hoy{box-shadow:0 0 0 2px var(--ink)}
+.cal button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.cal-pie{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:10px;
+  font-size:11.5px; color:var(--ink-2);
+}
+.cal-pie i{
+  display:inline-block; width:11px; height:11px; border-radius:3px;
+  background:var(--surface-2); vertical-align:-1px; margin-right:5px;
+}
+.cal-pie i.on{background:var(--accent)}
+.cal-det{
+  margin-top:10px; padding:9px 11px; border-radius:8px; background:var(--sunken);
+  font-size:12.5px; color:var(--ink-2); line-height:1.45; min-height:20px;
+}
+.cal-det b{color:var(--ink)}
+
 select{
   width:100%; padding:10px; border:1px solid var(--line); border-radius:8px;
   background:var(--surface); color:var(--ink); font-family:var(--font-b); font-size:14px;
@@ -416,6 +456,23 @@ select:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:
   </div>
 
   <div id="vista-progreso" hidden>
+
+    <section class="card">
+      <h2>Calendario</h2>
+      <div id="racha-hero"></div>
+      <div class="cal-caja">
+        <div class="cal-dias" id="cal-dias"></div>
+        <div class="cal-scroll" id="cal-scroll">
+          <div class="cal-meses" id="cal-meses"></div>
+          <div class="cal" id="cal"></div>
+        </div>
+      </div>
+      <div class="cal-pie">
+        <span><i></i>No fuiste</span>
+        <span><i class="on"></i>Entrenaste</span>
+      </div>
+      <div class="cal-det" id="cal-det">Toca un cuadrado para ver qué hiciste ese día.</div>
+    </section>
 
     <section class="card">
       <h2>Mesociclo</h2>
@@ -1428,6 +1485,143 @@ function vacio(cont, texto){
   cont.appendChild(p);
 }
 
+/* ---------- calendario y racha ---------- */
+const SEMANAS_CAL = 18;
+const MIN_SEMANA = 4;   // entrenos que hacen que una semana "cuente" (el plan son 5)
+
+function mapaSesiones(){
+  const m = {};
+  for(const s of sesionesReales()){
+    const n = s.series.filter(r => r.hecha).length;
+    const prev = m[s.fecha];
+    m[s.fecha] = { series:(prev ? prev.series : 0) + n, nombre:s.nombre || ("D"+s.dia), dia:s.dia };
+  }
+  return m;
+}
+
+function sumaFecha(f, dias){
+  const d = new Date(aDate(f).getTime() + dias*DIA_MS);
+  return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+}
+
+/* Racha en semanas, no en días: con un plan de 5 días, los descansos son
+   parte del plan y no deberían romper nada. Una semana cuenta con 4+ entrenos.
+   La semana en curso nunca rompe la racha: todavía puede cumplirse. */
+function rachas(mapa){
+  const semanaTiene = off => {
+    const lunes = sumaFecha(lunesDe(FECHA), -7*off);
+    let n = 0;
+    for(let d=0; d<7; d++) if(mapa[sumaFecha(lunes, d)]) n++;
+    return n;
+  };
+  let actual = 0;
+  for(let i=0;i<200;i++){
+    const n = semanaTiene(i);
+    if(n >= MIN_SEMANA){ actual++; continue; }
+    if(i === 0) continue;       // la semana en curso aún no ha terminado
+    break;
+  }
+  // Mejor racha histórica
+  const fechas = Object.keys(mapa).sort();
+  let mejor = actual;
+  if(fechas.length){
+    const semanas = {};
+    for(const f of fechas){ const w = lunesDe(f); semanas[w] = (semanas[w]||0)+1; }
+    const claves = Object.keys(semanas).sort();
+    let run = 0, prev = null;
+    for(const w of claves){
+      if(semanas[w] < MIN_SEMANA){ run = 0; prev = w; continue; }
+      run = (prev && diasEntre(prev, w) === 7 && semanas[prev] >= MIN_SEMANA) ? run+1 : 1;
+      if(run > mejor) mejor = run;
+      prev = w;
+    }
+  }
+  return { actual, mejor };
+}
+
+function pintarCalendario(){
+  const mapa = mapaSesiones();
+  const hero = document.getElementById("racha-hero");
+  const dias = document.getElementById("cal-dias");
+  const meses = document.getElementById("cal-meses");
+  const cal = document.getElementById("cal");
+  const det = document.getElementById("cal-det");
+  hero.textContent = ""; dias.textContent = ""; meses.textContent = ""; cal.textContent = "";
+
+  const r = rachas(mapa);
+  const total = Object.keys(mapa).length;
+
+  const h = document.createElement("div"); h.className = "hero";
+  const b = document.createElement("b");
+  b.textContent = r.actual + (r.actual === 1 ? " semana" : " semanas");
+  const sp = document.createElement("span");
+  sp.textContent = "de racha · " + total + (total === 1 ? " entreno" : " entrenos") + " en total";
+  h.append(b, sp);
+  hero.appendChild(h);
+
+  const chip = document.createElement("span");
+  if(!total){ chip.className = "chip info"; chip.textContent = "Sin empezar"; }
+  else if(r.actual === 0){ chip.className = "chip warn"; chip.textContent = "Racha rota — vuelve a empezar"; }
+  else if(r.actual >= r.mejor && r.actual > 1){ chip.className = "chip ok"; chip.textContent = "Tu mejor racha"; }
+  else { chip.className = "chip ok"; chip.textContent = "Mejor: " + r.mejor + (r.mejor === 1 ? " semana" : " semanas"); }
+  hero.appendChild(chip);
+
+  const nota = document.createElement("p");
+  nota.className = "nota";
+  nota.textContent = "Cuenta por semanas, no por días: los descansos son parte del plan. Una semana entra en la racha con "
+    + MIN_SEMANA + " entrenos o más. La semana en curso nunca te la rompe.";
+  hero.appendChild(nota);
+
+  // Etiquetas de día: solo lunes, miércoles y viernes, para no saturar
+  const nombres = ["L","M","X","J","V","S","D"];
+  for(let i=0;i<7;i++){
+    const s = document.createElement("span");
+    s.textContent = (i===0 || i===2 || i===4) ? nombres[i] : "";
+    dias.appendChild(s);
+  }
+
+  const primerLunes = sumaFecha(lunesDe(FECHA), -7*(SEMANAS_CAL-1));
+  const mesCorto = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+  let mesPrevio = null;
+
+  for(let w=0; w<SEMANAS_CAL; w++){
+    const lunes = sumaFecha(primerLunes, 7*w);
+    const m = aDate(lunes).getMonth();
+    const et = document.createElement("span");
+    et.style.gridColumn = (w+1);
+    et.textContent = (m !== mesPrevio) ? mesCorto[m] : "";
+    mesPrevio = m;
+    meses.appendChild(et);
+
+    for(let d=0; d<7; d++){
+      const f = sumaFecha(lunes, d);
+      const bt = document.createElement("button");
+      bt.type = "button";
+      const futuro = diasEntre(f, FECHA) < 0;
+      const dato = mapa[f];
+      if(futuro) bt.classList.add("futuro");
+      else if(dato) bt.classList.add("on");
+      if(f === FECHA) bt.classList.add("hoy");
+
+      const etiqueta = cortaFecha(f) + " · " + (futuro ? "aún no" : dato ? dato.nombre+", "+dato.series+" series" : "sin entreno");
+      bt.setAttribute("aria-label", etiqueta);
+      if(!futuro) bt.addEventListener("click", () => {
+        det.textContent = "";
+        const fuerte = document.createElement("b");
+        fuerte.textContent = cortaFecha(f) + (f === FECHA ? " (hoy)" : "");
+        det.append(fuerte, document.createTextNode(dato
+          ? " — " + dato.nombre + ", " + dato.series + " series"
+          : " — no entrenaste"));
+      });
+      cal.appendChild(bt);
+    }
+  }
+
+  // Empieza mostrando lo más reciente
+  const sc = document.getElementById("cal-scroll");
+  sc.scrollLeft = sc.scrollWidth;
+}
+
 /* ---------- 2.5 mesociclo ---------- */
 function mesociclo(){
   const ses = sesionesReales();
@@ -2062,6 +2256,7 @@ function editor(){
 
 /* ---------- vistas ---------- */
 function pintarProgreso(){
+  pintarCalendario();
   pintarMeso();
   pintarPeso();
   pintarVolumen();
