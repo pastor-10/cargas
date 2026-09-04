@@ -14,7 +14,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#F2F4F5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E1214" media="(prefers-color-scheme: dark)">
-<meta name="description" content="Registro de entrenos: peso, reps y RIR por serie, con la referencia de la última vez.">
+<meta name="description" content="Registro de entrenos: peso, reps y RIR por serie, con cronómetro de descanso y sugerencia de carga.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -27,6 +27,7 @@
   --rir-3:#2B7048; --rir-2:#9A7614; --rir-1:#B5501F; --rir-0:#9E2222;
   --done:#2B7048; --done-soft:#DCEBE2;
   --warn:#8A5A10; --warn-soft:#F6EBD6;
+  --sube:#1C5C9E; --sube-soft:#DCE8F4;
   --radius:10px;
   --font-d:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
   --font-b:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -40,6 +41,7 @@
     --rir-3:#5FBE8A; --rir-2:#D4AC4A; --rir-1:#E08457; --rir-0:#E36B6B;
     --done:#5FBE8A; --done-soft:#163023;
     --warn:#D9AC5C; --warn-soft:#2E2413;
+    --sube:#5A9EE0; --sube-soft:#17304A;
   }
 }
 :root[data-theme="dark"]{
@@ -50,6 +52,7 @@
   --rir-3:#5FBE8A; --rir-2:#D4AC4A; --rir-1:#E08457; --rir-0:#E36B6B;
   --done:#5FBE8A; --done-soft:#163023;
   --warn:#D9AC5C; --warn-soft:#2E2413;
+  --sube:#5A9EE0; --sube-soft:#17304A;
 }
 
 *{box-sizing:border-box}
@@ -60,7 +63,7 @@ body{
   -webkit-text-size-adjust:100%;
 }
 img{max-width:100%}
-.wrap{max-width:640px; margin:0 auto; padding:0 14px 138px}
+.wrap{max-width:640px; margin:0 auto; padding:0 14px 150px}
 
 .top{
   position:sticky; top:0; z-index:20; background:var(--ground);
@@ -68,14 +71,10 @@ img{max-width:100%}
   border-bottom:1px solid var(--line-soft);
 }
 .top-row{display:flex; align-items:baseline; justify-content:space-between; gap:12px}
-h1{
-  font-family:var(--font-d); font-weight:700; font-size:27px; line-height:1;
-  letter-spacing:.01em; margin:0; text-transform:uppercase;
-}
+h1{font-family:var(--font-d); font-weight:700; font-size:27px; line-height:1; letter-spacing:.01em; margin:0; text-transform:uppercase}
 .fecha{
-  font-family:var(--font-d); font-size:17px; font-weight:500;
-  color:var(--ink-2); letter-spacing:.03em; text-transform:uppercase;
-  font-variant-numeric:tabular-nums; white-space:nowrap;
+  font-family:var(--font-d); font-size:17px; font-weight:500; color:var(--ink-2);
+  letter-spacing:.03em; text-transform:uppercase; font-variant-numeric:tabular-nums; white-space:nowrap;
 }
 .dias{display:flex; gap:6px; margin-top:11px; overflow-x:auto; scrollbar-width:none}
 .dias::-webkit-scrollbar{display:none}
@@ -94,43 +93,56 @@ h1{
 .ej{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden}
 .ej.completo{border-color:var(--done)}
 .ej-cab{
-  width:100%; display:grid; grid-template-columns:1fr auto; gap:10px;
-  align-items:center; padding:11px 12px; background:none; border:0;
-  cursor:pointer; text-align:left; color:inherit; font-family:var(--font-b);
+  width:100%; display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center;
+  padding:11px 12px; background:none; border:0; cursor:pointer; text-align:left;
+  color:inherit; font-family:var(--font-b);
 }
 .ej-cab:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
 .ej-nom{font-weight:600; font-size:14.5px; line-height:1.25}
-.ej-meta{font-size:12px; color:var(--ink-2); margin-top:3px; font-variant-numeric:tabular-nums; display:flex; flex-wrap:wrap; gap:4px 8px}
+.ej-nom em{font-style:normal; color:var(--warn); font-size:12px; font-weight:500}
+.ej-meta{font-size:12px; color:var(--ink-2); margin-top:3px; font-variant-numeric:tabular-nums; display:flex; flex-wrap:wrap; gap:3px 8px}
 .ej-meta .obj{font-family:var(--font-d); font-size:13.5px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-3)}
 .ej-meta .ult b{color:var(--ink); font-weight:600}
 .ej-meta .nuevo{color:var(--ink-3); font-style:italic}
+.sug{
+  display:block; width:100%; margin-top:4px; font-size:12px; line-height:1.35;
+  color:var(--sube); font-weight:500;
+}
+.sug b{font-weight:600}
+.sug.mantener{color:var(--ink-2)}
+.sug.baja{color:var(--warn)}
 .cuenta{
-  font-family:var(--font-d); font-size:19px; font-weight:600; line-height:1;
-  color:var(--ink-3); font-variant-numeric:tabular-nums; letter-spacing:.02em;
-  padding:5px 9px; border-radius:7px; background:var(--surface-2); white-space:nowrap;
+  font-family:var(--font-d); font-size:19px; font-weight:600; line-height:1; color:var(--ink-3);
+  font-variant-numeric:tabular-nums; letter-spacing:.02em; padding:5px 9px; border-radius:7px;
+  background:var(--surface-2); white-space:nowrap;
 }
 .ej.completo .cuenta{background:var(--done-soft); color:var(--done)}
 .ej.parcial .cuenta{background:var(--accent-soft); color:var(--accent)}
 
-.series{border-top:1px solid var(--line-soft); padding:4px 12px 12px; background:var(--sunken)}
+.series{border-top:1px solid var(--line-soft); padding:4px 12px 10px; background:var(--sunken)}
 .serie{display:grid; grid-template-columns:22px 1fr 1fr auto 40px; gap:7px; align-items:center; padding:8px 0; border-bottom:1px solid var(--line-soft)}
-.serie:last-child{border-bottom:0}
+.serie:last-of-type{border-bottom:0}
 .n{font-family:var(--font-d); font-size:17px; font-weight:600; color:var(--ink-3); text-align:center; font-variant-numeric:tabular-nums}
 .campo{position:relative}
 .campo input{
   width:100%; padding:9px 8px; border:1px solid var(--line); border-radius:8px;
   background:var(--surface); color:var(--ink); font-family:var(--font-d);
-  font-size:20px; font-weight:600; font-variant-numeric:tabular-nums;
-  text-align:center; -moz-appearance:textfield;
+  font-size:20px; font-weight:600; font-variant-numeric:tabular-nums; text-align:center; -moz-appearance:textfield;
 }
 .campo input::-webkit-outer-spin-button,.campo input::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
 .campo input:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:var(--accent)}
 .campo u{position:absolute; right:6px; bottom:2px; font-size:9px; text-decoration:none; color:var(--ink-3); text-transform:uppercase; letter-spacing:.06em; pointer-events:none}
+.crono-serie{
+  width:100%; height:38px; border:1px solid var(--line); border-radius:8px; background:var(--surface);
+  color:var(--accent); cursor:pointer; font-family:var(--font-d); font-size:15px; font-weight:600;
+  letter-spacing:.04em; text-transform:uppercase; font-variant-numeric:tabular-nums;
+}
+.crono-serie[data-on="1"]{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
 .rir{display:flex; gap:3px}
 .rir button{
   width:26px; height:36px; padding:0; border:1px solid var(--line); border-radius:7px;
-  background:var(--surface); color:var(--ink-3); cursor:pointer;
-  font-family:var(--font-d); font-size:16px; font-weight:600; line-height:1; font-variant-numeric:tabular-nums;
+  background:var(--surface); color:var(--ink-3); cursor:pointer; font-family:var(--font-d);
+  font-size:16px; font-weight:600; line-height:1; font-variant-numeric:tabular-nums;
 }
 .rir button:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
 .rir button[aria-pressed="true"]{color:var(--on-accent); border-color:transparent}
@@ -139,9 +151,9 @@ h1{
 .rir button[data-r="2"][aria-pressed="true"]{background:var(--rir-2)}
 .rir button[data-r="3"][aria-pressed="true"],.rir button[data-r="4"][aria-pressed="true"]{background:var(--rir-3)}
 .check{
-  width:40px; height:38px; border:1px solid var(--line); border-radius:8px;
-  background:var(--surface); cursor:pointer; color:var(--ink-3);
-  display:flex; align-items:center; justify-content:center; font-size:19px; line-height:1;
+  width:40px; height:38px; border:1px solid var(--line); border-radius:8px; background:var(--surface);
+  cursor:pointer; color:var(--ink-3); display:flex; align-items:center; justify-content:center;
+  font-size:19px; line-height:1;
 }
 .check:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
 .serie.hecha .check{background:var(--done); border-color:var(--done); color:#fff}
@@ -154,20 +166,52 @@ h1{
 .cab-serie span:nth-child(2),.cab-serie span:nth-child(3){text-align:center}
 .cab-serie span:nth-child(4){width:100px}
 
+.pie-ej{display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding-top:9px; margin-top:2px; border-top:1px solid var(--line-soft)}
+.mini{
+  padding:6px 10px; border:1px solid var(--line); border-radius:7px; background:var(--surface);
+  color:var(--ink-2); cursor:pointer; font-family:var(--font-d); font-size:13.5px; font-weight:600;
+  letter-spacing:.05em; text-transform:uppercase; white-space:nowrap;
+}
+.mini:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.mini[aria-pressed="true"]{background:var(--accent-soft); border-color:var(--accent); color:var(--accent)}
+.desc-ctrl{display:flex; align-items:center; gap:5px; margin-left:auto}
+.desc-ctrl span{
+  font-family:var(--font-d); font-size:14px; font-weight:600; color:var(--ink-2);
+  font-variant-numeric:tabular-nums; min-width:62px; text-align:right; letter-spacing:.04em;
+}
+.desc-ctrl button{
+  width:30px; height:30px; padding:0; border:1px solid var(--line); border-radius:7px;
+  background:var(--surface); color:var(--ink-2); cursor:pointer; font-family:var(--font-d);
+  font-size:16px; font-weight:600; line-height:1;
+}
+.alts{display:flex; flex-direction:column; gap:5px; padding:9px 0 2px}
+.alt{
+  width:100%; text-align:left; padding:9px 11px; border:1px solid var(--line); border-radius:8px;
+  background:var(--surface); color:var(--ink); cursor:pointer; font-family:var(--font-b);
+  font-size:13.5px; line-height:1.3;
+}
+.alt[aria-pressed="true"]{border-color:var(--warn); background:var(--warn-soft); color:var(--warn); font-weight:600}
+.alt:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+
 .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:12px; margin-top:8px}
 .card h2{font-family:var(--font-d); font-size:16px; font-weight:600; margin:0 0 8px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-2)}
 .fila{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
 .fila input[type=number]{
   flex:1; min-width:110px; padding:10px; border:1px solid var(--line); border-radius:8px;
-  background:var(--surface); color:var(--ink); font-family:var(--font-d);
-  font-size:24px; font-weight:600; text-align:center; font-variant-numeric:tabular-nums; -moz-appearance:textfield;
+  background:var(--surface); color:var(--ink); font-family:var(--font-d); font-size:24px;
+  font-weight:600; text-align:center; font-variant-numeric:tabular-nums; -moz-appearance:textfield;
 }
 .fila input[type=number]::-webkit-outer-spin-button,.fila input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
 .fila input[type=number]:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:var(--accent)}
+textarea{
+  width:100%; min-height:74px; padding:10px; border:1px solid var(--line); border-radius:8px;
+  background:var(--surface); color:var(--ink); font-family:var(--font-b); font-size:14px;
+  line-height:1.45; resize:vertical;
+}
+textarea:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:var(--accent)}
 .btn{
-  padding:10px 16px; border:1px solid var(--accent); border-radius:8px;
-  background:var(--accent); color:var(--on-accent); cursor:pointer;
-  font-family:var(--font-d); font-size:16px; font-weight:600;
+  padding:10px 16px; border:1px solid var(--accent); border-radius:8px; background:var(--accent);
+  color:var(--on-accent); cursor:pointer; font-family:var(--font-d); font-size:16px; font-weight:600;
   letter-spacing:.05em; text-transform:uppercase; white-space:nowrap;
 }
 .btn:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
@@ -177,23 +221,41 @@ h1{
 .aviso{margin-top:10px; padding:10px 12px; border-radius:var(--radius); background:var(--warn-soft); color:var(--warn); font-size:12.5px; line-height:1.5}
 
 .barra{
-  position:fixed; left:0; right:0; bottom:0; z-index:30;
-  background:var(--surface); border-top:1px solid var(--line);
-  padding:9px 14px calc(9px + env(safe-area-inset-bottom,0px));
+  position:fixed; left:0; right:0; bottom:0; z-index:30; background:var(--surface);
+  border-top:1px solid var(--line); padding:9px 14px calc(9px + env(safe-area-inset-bottom,0px));
 }
+.barra.sonando{background:var(--done-soft); border-top-color:var(--done)}
 .barra-in{max-width:640px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px}
 .stats{display:flex; gap:16px}
 .stat{display:flex; flex-direction:column}
 .stat b{font-family:var(--font-d); font-size:21px; font-weight:700; line-height:1.05; font-variant-numeric:tabular-nums}
 .stat span{font-family:var(--font-d); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); line-height:1.3}
-.sync{display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--ink-2); text-align:right; max-width:180px; line-height:1.3}
+.sync{display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--ink-2); text-align:right; max-width:170px; line-height:1.3}
 .punto{width:8px; height:8px; border-radius:50%; background:var(--done); flex:none}
 .sync[data-e="aviso"] .punto{background:var(--warn)}
+
+.crono{display:flex; align-items:center; gap:10px; width:100%}
+.crono-num{
+  font-family:var(--font-d); font-size:34px; font-weight:700; line-height:1;
+  font-variant-numeric:tabular-nums; letter-spacing:.01em; min-width:86px;
+}
+.crono-info{display:flex; flex-direction:column; min-width:0; flex:1}
+.crono-info span{font-family:var(--font-d); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); line-height:1.3}
+.crono-info b{font-size:12.5px; font-weight:600; line-height:1.25; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.crono-btns{display:flex; gap:5px; flex:none}
+.crono-btns button{
+  min-width:42px; height:40px; padding:0 8px; border:1px solid var(--line); border-radius:8px;
+  background:var(--surface); color:var(--ink-2); cursor:pointer; font-family:var(--font-d);
+  font-size:14px; font-weight:600; line-height:1; letter-spacing:.03em;
+}
+.crono-btns button.stop{border-color:var(--accent); color:var(--accent)}
 
 @media (max-width:400px){
   .serie,.cab-serie{grid-template-columns:18px 1fr 1fr auto 36px; gap:5px}
   .rir button{width:23px}
   .check{width:36px}
+  .crono-num{font-size:30px; min-width:78px}
+  .crono-btns button{min-width:38px; padding:0 5px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
 </style>
@@ -211,6 +273,12 @@ h1{
 
   <main>
     <div class="lista" id="lista"></div>
+
+    <section class="card">
+      <h2>Nota de la sesión</h2>
+      <textarea id="nota" placeholder="Cómo te has encontrado, horas de sueño, molestias, si el gimnasio estaba lleno…" aria-label="Nota de la sesión"></textarea>
+      <p class="nota" id="nota-estado">Se guarda sola. Treinta segundos aquí valen mucho cuando toque analizar una semana rara.</p>
+    </section>
 
     <section class="card">
       <h2>Peso corporal</h2>
@@ -238,75 +306,132 @@ h1{
     <section class="card">
       <h2>Cómo llevar la serie</h2>
       <p class="nota" style="margin-top:0">
-        <b>Doble progresión:</b> cuando llegues al tope de reps del rango en todas las series, subes el peso lo mínimo posible y vuelves abajo del rango.<br>
+        <b>Doble progresión:</b> cuando llegues al tope de reps del rango en todas las series, subes el peso lo mínimo posible y vuelves abajo del rango. La app ya te lo propone sola.<br>
         <b>RIR por semana del mesociclo:</b> semanas 1-2 → 3 · semanas 3-4 → 2 · semana 5 → 1-0.<br>
         <b>Semana 1:</b> no busques el fallo, busca cargas. Anota lo que muevas con 3 de margen.
       </p>
+      <p class="nota"><b>Pantalla:</b> mientras haya una serie registrada hoy, la app intenta mantener el móvil encendido para que el cronómetro quede a la vista y suene. Si bloqueas la pantalla a mano, el pitido no sonará.</p>
     </section>
   </main>
 </div>
 
-<div class="barra">
-  <div class="barra-in">
+<div class="barra" id="barra">
+  <div class="barra-in" id="barra-normal">
     <div class="stats">
       <div class="stat"><b id="st-series">0/0</b><span>Series</span></div>
       <div class="stat"><b id="st-tonelaje">0</b><span>kg movidos</span></div>
     </div>
     <div class="sync" id="sync"><span class="punto"></span><span id="sync-txt">Guardado</span></div>
   </div>
+
+  <div class="crono" id="barra-crono" hidden>
+    <div class="crono-num" id="crono-num">0:00</div>
+    <div class="crono-info">
+      <span id="crono-tipo">Descanso</span>
+      <b id="crono-ej">—</b>
+    </div>
+    <div class="crono-btns">
+      <button type="button" id="crono-menos">−30</button>
+      <button type="button" id="crono-mas">+30</button>
+      <button type="button" id="crono-stop" class="stop">Listo</button>
+    </div>
+  </div>
 </div>
 
 <script>
 "use strict";
 
+/* ============================================================
+   RUTINA
+   n   nombre · s series · r rango de reps
+   d   descanso por defecto en segundos
+   inc incremento de carga sugerido al progresar (kg)
+   alt sustituciones si la máquina está ocupada
+   ============================================================ */
 const RUTINA = [
   { id:1, nombre:"Pierna A", corto:"Pierna A", ejercicios:[
-    { n:"Haka",                              s:4, r:"8-10"  },
-    { n:"Prensa",                            s:4, r:"10-12" },
-    { n:"Extensión de cuádriceps",           s:4, r:"12-15" },
-    { n:"Femoral sentado",                   s:4, r:"12-15" },
-    { n:"Máquina de gemelo",                 s:4, r:"10-12" },
-    { n:"Aductor",                           s:3, r:"10-12", opcional:true }
+    { n:"Haka", s:4, r:"8-10", d:180, inc:5,
+      alt:["Prensa","Sentadilla en multipower","Sentadilla libre"] },
+    { n:"Prensa", s:4, r:"10-12", d:150, inc:5,
+      alt:["Haka","Sentadilla goblet","Zancadas con mancuernas"] },
+    { n:"Extensión de cuádriceps", s:4, r:"12-15", d:90,
+      alt:["Extensión unilateral","Sissy squat","Zancadas"] },
+    { n:"Femoral sentado", s:4, r:"12-15", d:90,
+      alt:["Femoral tumbado","Peso muerto rumano con mancuernas"] },
+    { n:"Máquina de gemelo", s:4, r:"10-12", d:60,
+      alt:["Gemelo de pie en escalón","Gemelo en prensa"] },
+    { n:"Aductor", s:3, r:"10-12", d:60, opcional:true }
   ]},
   { id:2, nombre:"Empuje", corto:"Empuje", ejercicios:[
-    { n:"Press plano con mancuernas",        s:4, r:"8-10"  },
-    { n:"Press inclinado",                   s:3, r:"8-12"  },
-    { n:"Aperturas en polea",                s:3, r:"12-15" },
-    { n:"Press militar con mancuernas",      s:4, r:"8-10"  },
-    { n:"Elevaciones laterales en polea",    s:4, r:"12-15" },
-    { n:"Extensión de tríceps en polea",     s:3, r:"10-12" },
-    { n:"Extensión de tríceps sobre cabeza", s:3, r:"10-12" }
+    { n:"Press plano con mancuernas", s:4, r:"8-10", d:180,
+      alt:["Press en máquina","Press banca con barra"] },
+    { n:"Press inclinado", s:3, r:"8-12", d:150,
+      alt:["Máquina de press inclinado","Mancuernas en banco a 30°","Multipower"] },
+    { n:"Aperturas en polea", s:3, r:"12-15", d:90,
+      alt:["Contractora (peck deck)","Aperturas con mancuernas"] },
+    { n:"Press militar con mancuernas", s:4, r:"8-10", d:150,
+      alt:["Press militar en máquina","Press militar con barra"] },
+    { n:"Elevaciones laterales en polea", s:4, r:"12-15", d:60,
+      alt:["Laterales con mancuernas","Máquina de laterales"] },
+    { n:"Extensión de tríceps en polea", s:3, r:"10-12", d:60,
+      alt:["Press francés tumbado","Fondos en máquina"] },
+    { n:"Extensión de tríceps sobre cabeza", s:3, r:"10-12", d:60,
+      alt:["Mancuerna a dos manos sentado","Press francés sentado"] }
   ]},
   { id:3, nombre:"Tirón", corto:"Tirón", ejercicios:[
-    { n:"Dominadas",                         s:4, r:"5-10"  },
-    { n:"Remo con apoyo de pecho",           s:4, r:"8-10"  },
-    { n:"Jalón al pecho",                    s:4, r:"10-12" },
-    { n:"Remo sentado unilateral",           s:3, r:"10-12" },
-    { n:"Curl con mancuerna unilateral",     s:4, r:"8-10"  },
-    { n:"Curl de bíceps sentado",            s:3, r:"8-12"  },
-    { n:"Curl martillo en polea",            s:3, r:"12-15" }
+    { n:"Dominadas", s:4, r:"5-10", d:180,
+      alt:["Dominadas asistidas en máquina","Jalón agarre neutro","Negativas"] },
+    { n:"Remo con apoyo de pecho", s:4, r:"8-10", d:150,
+      alt:["Remo con barra","Remo con mancuerna a una mano","Remo en polea baja"] },
+    { n:"Jalón al pecho", s:4, r:"10-12", d:120,
+      alt:["Dominadas","Jalón unilateral en polea"] },
+    { n:"Remo sentado unilateral", s:3, r:"10-12", d:120,
+      alt:["Remo en polea baja","Remo con mancuerna"] },
+    { n:"Curl con mancuerna unilateral", s:4, r:"8-10", d:90,
+      alt:["Curl con barra Z","Curl en polea"] },
+    { n:"Curl de bíceps sentado", s:3, r:"8-12", d:90,
+      alt:["Curl inclinado","Curl en polea"] },
+    { n:"Curl martillo en polea", s:3, r:"12-15", d:60,
+      alt:["Curl martillo con mancuernas"] }
   ]},
   { id:4, nombre:"Pierna B", corto:"Pierna B", ejercicios:[
-    { n:"Peso muerto rumano",                s:4, r:"6-10"  },
-    { n:"Hip thrust",                        s:3, r:"8-12"  },
-    { n:"Búlgaras",                          s:3, r:"10-12" },
-    { n:"Femoral tumbado",                   s:3, r:"10-15" },
-    { n:"Gemelo sentado",                    s:4, r:"12-20" },
-    { n:"Abdominales en polea",              s:3, r:"10-15" }
+    { n:"Peso muerto rumano", s:4, r:"6-10", d:180, inc:5,
+      alt:["RDL con mancuernas","Buenos días","Hiperextensiones lastradas"] },
+    { n:"Hip thrust", s:3, r:"8-12", d:150, inc:5,
+      alt:["Puente de glúteo en el suelo con barra","Máquina de hip thrust"] },
+    { n:"Búlgaras", s:3, r:"10-12", d:120,
+      alt:["Zancadas","Prensa unilateral"] },
+    { n:"Femoral tumbado", s:3, r:"10-15", d:90,
+      alt:["Femoral sentado","Curl nórdico"] },
+    { n:"Gemelo sentado", s:4, r:"12-20", d:60,
+      alt:["Gemelo de pie","Gemelo en prensa"] },
+    { n:"Abdominales en polea", s:3, r:"10-15", d:60,
+      alt:["Crunch","Elevaciones de piernas"] }
   ]},
   { id:5, nombre:"Estética", corto:"Estética", ejercicios:[
-    { n:"Elevaciones laterales",             s:4, r:"12-20" },
-    { n:"Mariposa inversa",                  s:4, r:"15-20" },
-    { n:"Press inclinado 30°",               s:3, r:"8-12"  },
-    { n:"Pullover en polea alta",            s:3, r:"12-15" },
-    { n:"Curl inclinado con mancuernas",     s:3, r:"10-15" },
-    { n:"Extensión de tríceps en polea",     s:3, r:"10-15" },
-    { n:"Plancha o rueda abdominal",         s:3, r:"—", sinCarga:true }
+    { n:"Elevaciones laterales", s:4, r:"12-20", d:60,
+      alt:["Laterales en polea","Máquina de laterales"] },
+    { n:"Mariposa inversa", s:4, r:"15-20", d:60,
+      alt:["Pájaros con mancuernas en banco a 30°","Face pull en polea"] },
+    { n:"Press inclinado 30°", s:3, r:"8-12", d:120,
+      alt:["Máquina de press inclinado","Multipower"] },
+    { n:"Pullover en polea alta", s:3, r:"12-15", d:90,
+      alt:["Pullover con mancuerna"] },
+    { n:"Curl inclinado con mancuernas", s:3, r:"10-15", d:90,
+      alt:["Curl sentado","Curl en polea"] },
+    { n:"Extensión de tríceps en polea", s:3, r:"10-15", d:60,
+      alt:["Press francés tumbado","Fondos en máquina"] },
+    { n:"Plancha o rueda abdominal", s:3, r:"—", d:60, sinCarga:true,
+      alt:["Plancha","Rueda abdominal","Abdominales en polea"] }
   ]}
 ];
 
-const K = { ses:"gc.ses.", ult:"gc.ultimas", peso:"gc.peso", dia:"gc.dia", copia:"gc.ultimaCopia" };
-const AVISO_COPIA = 12; // sesiones sin exportar antes de avisar
+const K = {
+  ses:"gc.ses.", ult:"gc.ultimas", peso:"gc.peso", dia:"gc.dia",
+  copia:"gc.ultimaCopia", desc:"gc.descansos"
+};
+const AVISO_COPIA = 12;
+const INC_DEF = 2.5;
 
 function leer(k){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; }catch(e){ return null; } }
 function escribir(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; } }
@@ -319,14 +444,18 @@ const FECHA = hoy.getFullYear()+"-"+pad(hoy.getMonth()+1)+"-"+pad(hoy.getDate())
 let dia = Number(leer(K.dia)) || 1;
 let sesion = null;
 let ultimas = leer(K.ult) || {};
+let descansos = leer(K.desc) || {};
 
 function docId(f,d){ return f+"_d"+d; }
 function bloque(id){ return RUTINA.find(b => b.id === id); }
+function mmss(s){ s = Math.max(0, Math.round(s)); return Math.floor(s/60)+":"+pad(s%60); }
 
 function cargarSesion(){
   const id = docId(FECHA,dia);
-  sesion = leer(K.ses+id) || { fecha:FECHA, dia:dia, nombre:bloque(dia).nombre, series:[] };
+  sesion = leer(K.ses+id) || { fecha:FECHA, dia:dia, nombre:bloque(dia).nombre, series:[], nota:"", sustitutos:{} };
   if(!Array.isArray(sesion.series)) sesion.series = [];
+  if(typeof sesion.nota !== "string") sesion.nota = "";
+  if(!sesion.sustitutos || typeof sesion.sustitutos !== "object") sesion.sustitutos = {};
 }
 function serieDe(ej,i){ return sesion.series.find(s => s.ejercicio === ej && s.serie === i) || null; }
 
@@ -341,6 +470,7 @@ function guardar(){
     document.getElementById("sync-txt").textContent = "Guardado";
   }
   indexarUltimas();
+  mantenerPantalla();
 }
 
 function todasLasSesiones(){
@@ -354,20 +484,198 @@ function todasLasSesiones(){
   return out;
 }
 
+/* Para cada ejercicio, la ÚLTIMA sesión completa en que se hizo: todas sus
+   series. Es lo que necesita la sugerencia de carga, no solo la última serie. */
 function indexarUltimas(){
   const idx = {};
   for(const s of todasLasSesiones()){
+    const porEj = {};
     for(const r of s.series){
       if(!r.hecha) continue;
-      const prev = idx[r.ejercicio];
-      if(!prev || prev.fecha <= s.fecha) idx[r.ejercicio] = { fecha:s.fecha, peso:r.peso, reps:r.reps, rir:r.rir };
+      (porEj[r.ejercicio] = porEj[r.ejercicio] || []).push(r);
+    }
+    for(const ej of Object.keys(porEj)){
+      if(s.fecha === FECHA && s.dia === dia) continue; // la de hoy no es "la anterior"
+      const prev = idx[ej];
+      if(!prev || prev.fecha <= s.fecha){
+        const series = porEj[ej].slice().sort((a,b) => a.serie - b.serie);
+        idx[ej] = { fecha:s.fecha, series:series };
+      }
     }
   }
   ultimas = idx;
   escribir(K.ult, ultimas);
 }
 
-/* ---------- render ---------- */
+function rango(r){
+  const m = /^(\d+)\s*-\s*(\d+)$/.exec(String(r||"").trim());
+  return m ? { min:Number(m[1]), max:Number(m[2]) } : null;
+}
+
+/* Doble progresión. Devuelve null si no hay con qué compararse. */
+function sugerencia(ej){
+  const u = ultimas[ej.n];
+  if(!u || !u.series.length || ej.sinCarga) return null;
+  const rg = rango(ej.r);
+  if(!rg) return null;
+
+  const conPeso = u.series.filter(s => typeof s.peso === "number" && s.peso > 0);
+  const pesoAnt = conPeso.length ? Math.max.apply(null, conPeso.map(s => s.peso)) : null;
+  const reps = u.series.map(s => Number(s.reps) || 0);
+  const minReps = Math.min.apply(null, reps);
+  const inc = ej.inc || INC_DEF;
+
+  // Llegó al tope del rango en todas las series → sube peso, vuelve abajo
+  if(minReps >= rg.max && u.series.length >= Math.min(ej.s, 2)){
+    return {
+      tipo:"sube",
+      peso: pesoAnt !== null ? pesoAnt + inc : null,
+      reps: rg.min,
+      texto: pesoAnt !== null
+        ? "Sube a <b>"+fmt(pesoAnt + inc)+" kg</b> y busca "+rg.min+" reps"
+        : "Añade <b>"+fmt(inc)+" kg</b> de lastre y busca "+rg.min+" reps"
+    };
+  }
+  // No llegó → mismo peso, batir reps
+  const objetivo = Math.min(rg.max, minReps + 1);
+  return {
+    tipo: minReps < rg.min ? "baja" : "mantener",
+    peso: pesoAnt,
+    reps: objetivo,
+    texto: (pesoAnt !== null ? "Mantén <b>"+fmt(pesoAnt)+" kg</b>" : "Mismo lastre")
+      + " y bate <b>"+objetivo+" reps</b>"
+      + (minReps < rg.min ? " · la última vez bajaste del rango" : "")
+  };
+}
+
+function fmt(n){ return String(Math.round(n*100)/100).replace(".",","); }
+
+function descansoDe(ej){
+  const v = descansos[ej.n];
+  return (typeof v === "number" && v > 0) ? v : (ej.d || 90);
+}
+
+/* ============================================================
+   CRONÓMETRO
+   Guarda el instante de fin y recalcula: nunca se atrasa aunque
+   iOS congele los temporizadores mientras la app está de fondo.
+   ============================================================ */
+let crono = null;           // { fin, total, etiqueta, tipo, subida }
+let cronoTick = null;
+let audioCtx = null;
+
+function desbloquearAudio(){
+  try{
+    if(!audioCtx){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(AC) audioCtx = new AC();
+    }
+    if(audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+  }catch(e){}
+}
+
+function pitar(){
+  try{
+    if(!audioCtx) return;
+    const t0 = audioCtx.currentTime;
+    for(let i=0;i<3;i++){
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = 880;
+      const t = t0 + i*0.22;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.35, t+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t+0.18);
+      osc.connect(g); g.connect(audioCtx.destination);
+      osc.start(t); osc.stop(t+0.2);
+    }
+  }catch(e){}
+}
+
+function arrancarDescanso(ej){
+  const seg = descansoDe(ej);
+  crono = { fin: Date.now() + seg*1000, total: seg, etiqueta: ej.n, tipo:"Descanso", subida:false };
+  pintarCrono();
+  if(!cronoTick) cronoTick = setInterval(pintarCrono, 250);
+}
+
+function arrancarSubida(ej, alFinalizar){
+  crono = { fin: Date.now(), total:0, etiqueta: ej.n, tipo:"Tiempo", subida:true, cb:alFinalizar, inicio:Date.now() };
+  pintarCrono();
+  if(!cronoTick) cronoTick = setInterval(pintarCrono, 250);
+}
+
+function pararCrono(){
+  const c = crono;
+  crono = null;
+  if(cronoTick){ clearInterval(cronoTick); cronoTick = null; }
+  document.getElementById("barra").classList.remove("sonando");
+  document.getElementById("barra-crono").hidden = true;
+  document.getElementById("barra-normal").hidden = false;
+  if(c && c.subida && typeof c.cb === "function"){
+    c.cb(Math.round((Date.now() - c.inicio)/1000));
+  }
+}
+
+function pintarCrono(){
+  if(!crono) return;
+  document.getElementById("barra-normal").hidden = true;
+  document.getElementById("barra-crono").hidden = false;
+  document.getElementById("crono-tipo").textContent = crono.tipo;
+  document.getElementById("crono-ej").textContent = crono.etiqueta;
+
+  const menos = document.getElementById("crono-menos");
+  const mas = document.getElementById("crono-mas");
+  menos.hidden = !!crono.subida;
+  mas.hidden = !!crono.subida;
+
+  if(crono.subida){
+    document.getElementById("crono-num").textContent = mmss((Date.now() - crono.inicio)/1000);
+    return;
+  }
+
+  const resta = (crono.fin - Date.now())/1000;
+  const num = document.getElementById("crono-num");
+  const barra = document.getElementById("barra");
+
+  if(resta <= 0){
+    num.textContent = "0:00";
+    if(!crono.sonado){ crono.sonado = true; pitar(); barra.classList.add("sonando"); }
+    // Cuenta hacia arriba el tiempo de más
+    num.textContent = "+"+mmss(-resta);
+  }else{
+    num.textContent = mmss(resta);
+    barra.classList.remove("sonando");
+  }
+}
+
+document.getElementById("crono-menos").addEventListener("click", () => {
+  if(crono && !crono.subida){ crono.fin -= 30000; crono.sonado = false; pintarCrono(); }
+});
+document.getElementById("crono-mas").addEventListener("click", () => {
+  if(crono && !crono.subida){ crono.fin += 30000; crono.sonado = false; pintarCrono(); }
+});
+document.getElementById("crono-stop").addEventListener("click", pararCrono);
+
+/* ============================================================
+   PANTALLA ENCENDIDA
+   ============================================================ */
+let wakeLock = null;
+async function mantenerPantalla(){
+  try{
+    if(!("wakeLock" in navigator)) return;
+    const hayActividad = sesion && sesion.series.some(s => s.hecha);
+    if(hayActividad && !wakeLock && document.visibilityState === "visible"){
+      wakeLock = await navigator.wakeLock.request("screen");
+      wakeLock.addEventListener("release", () => { wakeLock = null; });
+    }
+  }catch(e){ wakeLock = null; }
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
 function pintarDias(){
   const cont = document.getElementById("dias");
   cont.textContent = "";
@@ -381,7 +689,8 @@ function pintarDias(){
     bt.addEventListener("click", () => {
       if(b.id === dia) return;
       dia = b.id; escribir(K.dia, dia);
-      cargarSesion(); pintarDias(); pintarLista(); totales();
+      cargarSesion(); indexarUltimas();
+      pintarDias(); pintarLista(); totales(); pintarNota();
     });
     cont.appendChild(bt);
   }
@@ -405,26 +714,44 @@ function tarjeta(ej){
   const nom = document.createElement("div");
   nom.className = "ej-nom";
   nom.textContent = ej.n + (ej.opcional ? " · opcional" : "");
+  const sust = sesion.sustitutos[ej.n];
+  if(sust){
+    const e = document.createElement("em");
+    e.textContent = "  → " + sust;
+    nom.appendChild(e);
+  }
+
   const meta = document.createElement("div"); meta.className = "ej-meta";
   const obj = document.createElement("span"); obj.className = "obj";
   obj.textContent = ej.sinCarga ? ej.s+" series" : ej.s+" × "+ej.r;
   meta.appendChild(obj);
+
+  const u = ultimas[ej.n];
   if(!ej.sinCarga){
-    const u = ultimas[ej.n];
     const ult = document.createElement("span");
-    if(u){
+    if(u && u.series.length){
+      const s0 = u.series[0];
       ult.className = "ult";
       ult.append("última vez ");
       const b = document.createElement("b");
-      b.textContent = (u.peso ? u.peso+" kg × " : "")+u.reps+" reps";
+      b.textContent = (s0.peso ? fmt(s0.peso)+" kg × " : "")+s0.reps+" reps";
       ult.appendChild(b);
-      if(u.rir !== null && u.rir !== undefined) ult.append(" · RIR "+u.rir);
+      if(s0.rir !== null && s0.rir !== undefined) ult.append(" · RIR "+s0.rir);
     }else{
       ult.className = "nuevo"; ult.textContent = "sin registro previo";
     }
     meta.appendChild(ult);
   }
+
   izq.append(nom,meta);
+
+  const sug = sugerencia(ej);
+  if(sug){
+    const s = document.createElement("span");
+    s.className = "sug " + sug.tipo;
+    s.innerHTML = sug.texto;
+    izq.appendChild(s);
+  }
 
   const cuenta = document.createElement("div");
   cuenta.className = "cuenta"; cuenta.textContent = hechas+"/"+ej.s;
@@ -433,12 +760,14 @@ function tarjeta(ej){
   const cuerpo = document.createElement("div");
   cuerpo.className = "series"; cuerpo.hidden = true;
   cuerpo.appendChild(cabeceraSeries(ej));
-  for(let i=1;i<=ej.s;i++) cuerpo.appendChild(filaSerie(ej,i,cuenta,art));
+  for(let i=1;i<=ej.s;i++) cuerpo.appendChild(filaSerie(ej,i,cuenta,art,sug));
+  cuerpo.appendChild(pieEjercicio(ej, art));
 
   cab.addEventListener("click", () => {
     const abrir = cuerpo.hidden;
     cuerpo.hidden = !abrir;
     cab.setAttribute("aria-expanded", String(abrir));
+    if(abrir) desbloquearAudio();
   });
 
   art.append(cab,cuerpo);
@@ -447,37 +776,65 @@ function tarjeta(ej){
 
 function cabeceraSeries(ej){
   const h = document.createElement("div"); h.className = "cab-serie";
-  for(const x of ["#", ej.sinCarga ? "—" : "Peso", ej.sinCarga ? "Seg." : "Reps", "RIR", ""]){
+  for(const x of ["#", ej.sinCarga ? "Crono" : "Peso", ej.sinCarga ? "Seg." : "Reps", "RIR", ""]){
     const s = document.createElement("span"); s.textContent = x; h.appendChild(s);
   }
   return h;
 }
 
-function campo(unidad,valor,desactivado){
+function campo(unidad,valor){
   const d = document.createElement("div"); d.className = "campo";
   const i = document.createElement("input");
   i.type = "number"; i.inputMode = "decimal"; i.step = "0.5"; i.min = "0";
   if(valor !== null && valor !== undefined) i.value = valor;
-  if(desactivado){ i.disabled = true; i.placeholder = "—"; }
   const u = document.createElement("u"); u.textContent = unidad;
   d.append(i,u);
   return d;
 }
 
-function filaSerie(ej,i,cuenta,art){
+function filaSerie(ej,i,cuenta,art,sug){
   const dato = serieDe(ej.n,i);
   const u = ultimas[ej.n];
+  const anterior = u && u.series ? (u.series.find(s => s.serie === i) || u.series[u.series.length-1]) : null;
+
+  // Prioridad de precarga: lo ya registrado hoy > sugerencia > lo de la última vez
+  let pesoPre = null, repsPre = null, rirPre = null;
+  if(dato){ pesoPre = dato.peso; repsPre = dato.reps; rirPre = dato.rir; }
+  else if(sug){ pesoPre = sug.peso; repsPre = sug.reps; rirPre = anterior ? anterior.rir : null; }
+  else if(anterior){ pesoPre = anterior.peso; repsPre = anterior.reps; rirPre = anterior.rir; }
+
   const fila = document.createElement("div");
   fila.className = "serie" + (dato && dato.hecha ? " hecha" : "");
 
   const n = document.createElement("div"); n.className = "n"; n.textContent = i;
-  const cPeso = campo("kg", dato ? dato.peso : (u ? u.peso : null), !!ej.sinCarga);
-  const cReps = campo(ej.sinCarga ? "seg" : "reps", dato ? dato.reps : (u ? u.reps : null), false);
-  cPeso.querySelector("input").setAttribute("aria-label", ej.n+" serie "+i+", peso en kilos");
-  cReps.querySelector("input").setAttribute("aria-label", ej.n+" serie "+i+", repeticiones");
+
+  let cPeso, cReps;
+  cReps = campo(ej.sinCarga ? "seg" : "reps", repsPre);
+  cReps.querySelector("input").setAttribute("aria-label", ej.n+" serie "+i+", "+(ej.sinCarga?"segundos":"repeticiones"));
+
+  if(ej.sinCarga){
+    // En ejercicios de tiempo, la casilla de peso se convierte en cronómetro
+    cPeso = document.createElement("button");
+    cPeso.type = "button"; cPeso.className = "crono-serie"; cPeso.textContent = "Empezar";
+    cPeso.addEventListener("click", () => {
+      desbloquearAudio();
+      if(crono && crono.subida && cPeso.dataset.on === "1"){
+        pararCrono();
+        return;
+      }
+      cPeso.dataset.on = "1"; cPeso.textContent = "Parar";
+      arrancarSubida(ej, seg => {
+        cReps.querySelector("input").value = seg;
+        cPeso.dataset.on = "0"; cPeso.textContent = "Empezar";
+      });
+    });
+  }else{
+    cPeso = campo("kg", pesoPre);
+    cPeso.querySelector("input").setAttribute("aria-label", ej.n+" serie "+i+", peso en kilos");
+  }
 
   const rir = document.createElement("div"); rir.className = "rir";
-  let rirVal = dato ? dato.rir : (u ? u.rir : null);
+  let rirVal = (rirPre === undefined) ? null : rirPre;
   const botones = [];
   for(let r=0;r<=4;r++){
     const b = document.createElement("button");
@@ -498,9 +855,9 @@ function filaSerie(ej,i,cuenta,art){
   chk.setAttribute("aria-pressed", String(!!(dato && dato.hecha)));
 
   function valores(){
-    const p = parseFloat(cPeso.querySelector("input").value);
+    const p = ej.sinCarga ? NaN : parseFloat(cPeso.querySelector("input").value);
     const r = parseFloat(cReps.querySelector("input").value);
-    return { peso: ej.sinCarga ? null : (isFinite(p) ? p : null), reps: isFinite(r) ? r : null, rir: rirVal };
+    return { peso: isFinite(p) ? p : null, reps: isFinite(r) ? r : null, rir: rirVal };
   }
   function registrar(){
     const v = valores();
@@ -511,10 +868,15 @@ function filaSerie(ej,i,cuenta,art){
   }
 
   chk.addEventListener("click", () => {
+    desbloquearAudio();
     const marcar = !fila.classList.contains("hecha");
     if(marcar){
       if(valores().reps === null){ cReps.querySelector("input").focus(); return; }
-      fila.classList.add("hecha"); registrar();
+      fila.classList.add("hecha");
+      registrar();
+      if(crono && crono.subida) pararCrono();
+      if(i < ej.s) arrancarDescanso(ej);   // la última serie no necesita descanso
+      else pararCrono();
     }else{
       fila.classList.remove("hecha");
       sesion.series = sesion.series.filter(s => !(s.ejercicio === ej.n && s.serie === i));
@@ -528,7 +890,9 @@ function filaSerie(ej,i,cuenta,art){
     totales(); estadoCopia();
   });
 
-  for(const c of [cPeso,cReps]){
+  const inputs = [cReps];
+  if(!ej.sinCarga) inputs.push(cPeso);
+  for(const c of inputs){
     c.querySelector("input").addEventListener("change", () => {
       if(fila.classList.contains("hecha")){ registrar(); totales(); }
     });
@@ -536,6 +900,67 @@ function filaSerie(ej,i,cuenta,art){
 
   fila.append(n,cPeso,cReps,rir,chk);
   return fila;
+}
+
+function pieEjercicio(ej, art){
+  const pie = document.createElement("div"); pie.className = "pie-ej";
+
+  const alts = document.createElement("div"); alts.className = "alts"; alts.hidden = true;
+
+  if(ej.alt && ej.alt.length){
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "mini";
+    btn.textContent = "Máquina ocupada";
+    btn.setAttribute("aria-expanded","false");
+    btn.addEventListener("click", () => {
+      const abrir = alts.hidden;
+      alts.hidden = !abrir;
+      btn.setAttribute("aria-expanded", String(abrir));
+    });
+    pie.appendChild(btn);
+
+    const opciones = [ej.n].concat(ej.alt);
+    for(const nombre of opciones){
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "alt";
+      b.textContent = (nombre === ej.n ? "▸ " : "") + nombre + (nombre === ej.n ? "  (el de la rutina)" : "");
+      const activo = (sesion.sustitutos[ej.n] || ej.n) === nombre;
+      b.setAttribute("aria-pressed", String(activo && nombre !== ej.n));
+      b.addEventListener("click", () => {
+        if(nombre === ej.n) delete sesion.sustitutos[ej.n];
+        else sesion.sustitutos[ej.n] = nombre;
+        guardar();
+        pintarLista();
+      });
+      alts.appendChild(b);
+    }
+  }
+
+  const ctrl = document.createElement("div"); ctrl.className = "desc-ctrl";
+  const menos = document.createElement("button");
+  menos.type = "button"; menos.textContent = "−"; menos.setAttribute("aria-label","Menos descanso en "+ej.n);
+  const txt = document.createElement("span");
+  const mas = document.createElement("button");
+  mas.type = "button"; mas.textContent = "+"; mas.setAttribute("aria-label","Más descanso en "+ej.n);
+  function pinta(){ txt.textContent = "descanso "+mmss(descansoDe(ej)); }
+  menos.addEventListener("click", () => {
+    descansos[ej.n] = Math.max(30, descansoDe(ej) - 15);
+    escribir(K.desc, descansos); pinta();
+  });
+  mas.addEventListener("click", () => {
+    descansos[ej.n] = Math.min(600, descansoDe(ej) + 15);
+    escribir(K.desc, descansos); pinta();
+  });
+  pinta();
+  ctrl.append(menos,txt,mas);
+  pie.appendChild(ctrl);
+
+  const envoltura = document.createDocumentFragment();
+  envoltura.appendChild(pie);
+  envoltura.appendChild(alts);
+  const cont = document.createElement("div");
+  cont.appendChild(envoltura);
+  return cont;
 }
 
 function totales(){
@@ -547,42 +972,58 @@ function totales(){
   document.getElementById("st-tonelaje").textContent = Math.round(ton).toLocaleString("es-ES");
 }
 
+/* ---------- nota de sesión ---------- */
+let notaTimer = null;
+function pintarNota(){
+  document.getElementById("nota").value = sesion.nota || "";
+}
+function nota(){
+  const ta = document.getElementById("nota");
+  const est = document.getElementById("nota-estado");
+  ta.addEventListener("input", () => {
+    sesion.nota = ta.value;
+    clearTimeout(notaTimer);
+    notaTimer = setTimeout(() => {
+      guardar();
+      est.textContent = "Nota guardada.";
+    }, 600);
+  });
+}
+
 /* ---------- peso corporal ---------- */
 function pesoCorporal(){
   const inp = document.getElementById("peso");
   const btn = document.getElementById("peso-btn");
-  const nota = document.getElementById("peso-nota");
+  const nt = document.getElementById("peso-nota");
   const cache = leer(K.peso) || {};
   if(cache[FECHA]) inp.value = cache[FECHA];
   btn.addEventListener("click", () => {
     const kg = parseFloat(inp.value);
     if(!isFinite(kg) || kg < 30 || kg > 200){ inp.focus(); return; }
     cache[FECHA] = kg; escribir(K.peso, cache);
-    nota.textContent = String(kg).replace(".",",")+" kg guardados para hoy.";
+    nt.textContent = fmt(kg)+" kg guardados para hoy.";
   });
 }
 
-/* ---------- copia de seguridad ---------- */
+/* ---------- copias ---------- */
 function respaldo(){
   return {
-    formato: "cuaderno-de-cargas/1",
-    exportado: new Date().toISOString(),
-    sesiones: todasLasSesiones(),
-    peso: leer(K.peso) || {}
+    formato:"cuaderno-de-cargas/2",
+    exportado:new Date().toISOString(),
+    sesiones:todasLasSesiones(),
+    peso:leer(K.peso) || {},
+    descansos:descansos
   };
 }
-
 function estadoCopia(){
-  const nota = document.getElementById("copia-nota");
+  const nt = document.getElementById("copia-nota");
   const aviso = document.getElementById("copia-aviso");
   const total = todasLasSesiones().filter(s => s.series.some(r => r.hecha)).length;
   const ultima = leer(K.copia);
   const desde = ultima ? total - (ultima.sesiones || 0) : total;
-
-  nota.textContent = ultima
+  nt.textContent = ultima
     ? "Última copia: "+ultima.fecha+" · "+total+" sesiones registradas."
     : (total ? total+" sesiones registradas y ninguna copia hecha todavía." : "Sin sesiones registradas todavía.");
-
   if(desde >= AVISO_COPIA){
     aviso.hidden = false;
     aviso.textContent = "Llevas "+desde+" sesiones sin exportar. Hazlo ahora: si pierdes el móvil o borras los datos de Safari, se van con él.";
@@ -590,7 +1031,6 @@ function estadoCopia(){
     aviso.hidden = true;
   }
 }
-
 function copias(){
   document.getElementById("exportar").addEventListener("click", () => {
     const datos = respaldo();
@@ -611,22 +1051,25 @@ function copias(){
     if(!f) return;
     const lector = new FileReader();
     lector.onload = () => {
-      const nota = document.getElementById("copia-nota");
+      const nt = document.getElementById("copia-nota");
       let datos;
       try{ datos = JSON.parse(String(lector.result)); }
-      catch(e){ nota.textContent = "Ese archivo no se puede leer. Tiene que ser un .json exportado desde aquí."; return; }
-      if(!datos || !Array.isArray(datos.sesiones)){ nota.textContent = "Ese archivo no es una copia de Cargas."; return; }
+      catch(e){ nt.textContent = "Ese archivo no se puede leer. Tiene que ser un .json exportado desde aquí."; return; }
+      if(!datos || !Array.isArray(datos.sesiones)){ nt.textContent = "Ese archivo no es una copia de Cargas."; return; }
       let n = 0;
       for(const s of datos.sesiones){
         if(!s || !s.fecha || !Array.isArray(s.series)) continue;
         escribir(K.ses+docId(s.fecha, s.dia), s); n++;
       }
       if(datos.peso && typeof datos.peso === "object"){
-        const actual = leer(K.peso) || {};
-        escribir(K.peso, Object.assign(actual, datos.peso));
+        escribir(K.peso, Object.assign(leer(K.peso) || {}, datos.peso));
       }
-      indexarUltimas(); cargarSesion(); pintarLista(); totales(); estadoCopia();
-      nota.textContent = "Restauradas "+n+" sesiones.";
+      if(datos.descansos && typeof datos.descansos === "object"){
+        descansos = Object.assign(descansos, datos.descansos);
+        escribir(K.desc, descansos);
+      }
+      cargarSesion(); indexarUltimas(); pintarLista(); totales(); pintarNota(); estadoCopia();
+      nt.textContent = "Restauradas "+n+" sesiones.";
       input.value = "";
     };
     lector.readAsText(f);
@@ -641,14 +1084,24 @@ function fechaLarga(){
 }
 
 document.getElementById("fecha").textContent = fechaLarga();
-indexarUltimas();
 cargarSesion();
+indexarUltimas();
 pintarDias();
 pintarLista();
 totales();
+pintarNota();
+nota();
 pesoCorporal();
 copias();
 estadoCopia();
+mantenerPantalla();
+
+document.addEventListener("visibilitychange", () => {
+  if(document.visibilityState === "visible"){
+    mantenerPantalla();
+    if(crono) pintarCrono();
+  }
+});
 
 if("serviceWorker" in navigator){
   window.addEventListener("load", () => {
