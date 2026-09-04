@@ -416,6 +416,7 @@ select:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:
 
   <main>
   <div id="vista-entreno">
+    <div class="aviso" id="banner-copia" hidden style="margin:0 0 10px"></div>
     <div class="lista" id="lista"></div>
 
     <section class="card">
@@ -434,15 +435,46 @@ select:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:
     </section>
 
     <section class="card">
+      <h2>Sueño y recuperación</h2>
+      <div class="fila">
+        <div class="campo" style="flex:1; min-width:96px">
+          <input id="sueno" type="number" inputmode="decimal" step="0.5" min="0" max="14" placeholder="7.5" aria-label="Horas de sueño">
+          <u>horas</u>
+        </div>
+        <div class="campo" style="flex:1; min-width:96px">
+          <input id="recup" type="number" inputmode="numeric" step="1" min="0" max="100" placeholder="65" aria-label="Recuperación Whoop en por ciento">
+          <u>% recup.</u>
+        </div>
+        <button class="btn" id="salud-btn" type="button">Guardar</button>
+      </div>
+      <p class="nota" id="salud-nota">Los dos datos del Whoop que sí cambian decisiones. Diez segundos al día y me dan el contexto para interpretar una semana mala.</p>
+    </section>
+
+    <section class="card">
+      <h2>Editar el día</h2>
+      <p class="nota" style="margin-top:0">Cambia series, repeticiones o el nombre de un ejercicio de <b id="edit-dia">este día</b>. Al renombrar, el histórico se renombra contigo y no pierdes nada.</p>
+      <div class="fila" style="margin-top:10px">
+        <button class="btn sec" id="edit-abrir" type="button" aria-expanded="false">Abrir editor</button>
+        <button class="btn sec" id="edit-restaurar" type="button" hidden>Restaurar original</button>
+      </div>
+      <div id="editor" hidden></div>
+    </section>
+
+    <section class="card">
       <h2>Copia de seguridad</h2>
       <p class="nota" style="margin-top:0">
         Todo se guarda <b>solo en este móvil</b>. Exporta de vez en cuando: el archivo es tu copia y es lo que le pasas a Claude para el análisis.
       </p>
       <div class="fila" style="margin-top:10px">
-        <button class="btn" id="exportar" type="button">Exportar</button>
+        <button class="btn" id="exportar" type="button">Copia (JSON)</button>
         <button class="btn sec" id="importar-btn" type="button">Restaurar</button>
         <input id="importar" type="file" accept="application/json,.json" hidden>
       </div>
+      <div class="fila" style="margin-top:8px">
+        <button class="btn sec" id="csv-entrenos" type="button">CSV entrenos</button>
+        <button class="btn sec" id="csv-peso" type="button">CSV peso y sueño</button>
+      </div>
+      <p class="nota">El JSON es la copia completa y la única que sirve para restaurar. Los CSV son para abrir en Excel o pasármelos a mí.</p>
       <p class="nota" id="copia-nota"></p>
       <div class="aviso" id="copia-aviso" hidden></div>
     </section>
@@ -674,7 +706,19 @@ let ultimas = leer(K.ult) || {};
 let descansos = leer(K.desc) || {};
 
 function docId(f,d){ return f+"_d"+d; }
-function bloque(id){ return RUTINA.find(b => b.id === id); }
+
+/* La rutina activa es la editada por el usuario si existe, y si no la de
+   fábrica. Todo el resto de la app lee de aquí, nunca de RUTINA directamente. */
+let RUTINA_ACT = null;
+function rutinaActiva(){
+  if(RUTINA_ACT) return RUTINA_ACT;
+  const g = leer("gc.rutina");
+  RUTINA_ACT = (g && Array.isArray(g) && g.length === RUTINA.length) ? g : RUTINA;
+  return RUTINA_ACT;
+}
+function guardarRutina(r){ RUTINA_ACT = r; escribir("gc.rutina", r); }
+function rutinaEsOriginal(){ return !leer("gc.rutina"); }
+function bloque(id){ return rutinaActiva().find(b => b.id === id) || rutinaActiva()[0]; }
 function mmss(s){ s = Math.max(0, Math.round(s)); return Math.floor(s/60)+":"+pad(s%60); }
 
 function cargarSesion(){
@@ -906,7 +950,7 @@ async function mantenerPantalla(){
 function pintarDias(){
   const cont = document.getElementById("dias");
   cont.textContent = "";
-  for(const b of RUTINA){
+  for(const b of rutinaActiva()){
     const bt = document.createElement("button");
     bt.type = "button"; bt.className = "dia";
     bt.setAttribute("aria-pressed", String(b.id === dia));
@@ -1245,36 +1289,46 @@ function respaldo(){
       const d = {};
       for(const k of claves()) if(k.indexOf("gc.dieta.") === 0) d[k.slice(9)] = leer(k);
       return d;
-    })()
+    })(),
+    salud:leer("gc.salud") || {},
+    rutina:leer("gc.rutina") || null
   };
 }
 function estadoCopia(){
   const nt = document.getElementById("copia-nota");
   const aviso = document.getElementById("copia-aviso");
-  const total = todasLasSesiones().filter(s => s.series.some(r => r.hecha)).length;
-  const ultima = leer(K.copia);
-  const desde = ultima ? total - (ultima.sesiones || 0) : total;
-  nt.textContent = ultima
-    ? "Última copia: "+ultima.fecha+" · "+total+" sesiones registradas."
-    : (total ? total+" sesiones registradas y ninguna copia hecha todavía." : "Sin sesiones registradas todavía.");
-  if(desde >= AVISO_COPIA){
+  const p = pendientesCopia();
+
+  nt.textContent = p.fecha
+    ? "Última copia: "+cortaFecha(p.fecha)+" ("+p.dias+" días) · "+p.total+" sesiones registradas."
+    : (p.total ? p.total+" sesiones registradas y ninguna copia hecha todavía." : "Sin sesiones registradas todavía.");
+
+  if(p.desde >= 20){
     aviso.hidden = false;
-    aviso.textContent = "Llevas "+desde+" sesiones sin exportar. Hazlo ahora: si pierdes el móvil o borras los datos de Safari, se van con él.";
+    aviso.style.fontWeight = "600";
+    aviso.textContent = "Llevas "+p.desde+" sesiones sin exportar. Esto ya es un mes de trabajo que existe en un solo sitio. Exporta ahora.";
+  }else if(p.desde >= AVISO_COPIA){
+    aviso.hidden = false;
+    aviso.style.fontWeight = "";
+    aviso.textContent = "Llevas "+p.desde+" sesiones sin exportar. Si pierdes el móvil o borras los datos de Safari, se van con él.";
   }else{
     aviso.hidden = true;
   }
+  pintarBanner();
 }
 function copias(){
   document.getElementById("exportar").addEventListener("click", () => {
     const datos = respaldo();
-    const blob = new Blob([JSON.stringify(datos,null,2)], {type:"application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = "cargas-"+FECHA+".json";
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    descargar("cargas-"+FECHA+".json", JSON.stringify(datos,null,2), "application/json");
     escribir(K.copia, { fecha:FECHA, sesiones: datos.sesiones.filter(s => s.series.some(r => r.hecha)).length });
     estadoCopia();
+  });
+
+  document.getElementById("csv-entrenos").addEventListener("click", () => {
+    descargar("cargas-entrenos-"+FECHA+".csv", csv(csvEntrenos()), "text/csv;charset=utf-8");
+  });
+  document.getElementById("csv-peso").addEventListener("click", () => {
+    descargar("cargas-peso-"+FECHA+".csv", csv(csvPeso()), "text/csv;charset=utf-8");
   });
 
   const input = document.getElementById("importar");
@@ -1305,7 +1359,11 @@ function copias(){
       if(datos.dieta && typeof datos.dieta === "object"){
         for(const f of Object.keys(datos.dieta)) escribir("gc.dieta."+f, datos.dieta[f]);
       }
-      cargarSesion(); indexarUltimas(); pintarLista(); totales(); pintarNota(); estadoCopia();
+      if(datos.salud && typeof datos.salud === "object"){
+        escribir("gc.salud", Object.assign(leer("gc.salud") || {}, datos.salud));
+      }
+      if(datos.rutina && Array.isArray(datos.rutina)) guardarRutina(datos.rutina);
+      cargarSesion(); indexarUltimas(); pintarDias(); pintarLista(); totales(); pintarNota(); estadoCopia();
       nt.textContent = "Restauradas "+n+" sesiones.";
       input.value = "";
     };
@@ -1352,6 +1410,14 @@ const GRUPOS = [
   {k:"core",             n:"Core",             obj:6},
   {k:"aductor",          n:"Aductor",          obj:3}
 ];
+
+/* Grupos por nombre de ejercicio: la tabla de fábrica, más lo que traiga
+   cada ejercicio de la rutina activa (los añadidos o renombrados al editar). */
+function mapaMusculos(){
+  const m = Object.assign({}, MUSC);
+  for(const b of rutinaActiva()) for(const ej of b.ejercicios) if(ej.mg) m[ej.n] = ej.mg;
+  return m;
+}
 
 const DIA_MS = 86400000;
 function aDate(f){ return new Date(f+"T12:00:00"); }
@@ -1617,11 +1683,12 @@ function pintarPeso(){
 /* ---------- 2.3 volumen semanal ---------- */
 function volumenDe(lunes){
   const cuenta = {};
+  const mapa = mapaMusculos();
   for(const s of sesionesReales()){
     if(lunesDe(s.fecha) !== lunes) continue;
     for(const r of s.series){
       if(!r.hecha) continue;
-      const gs = MUSC[r.ejercicio];
+      const gs = mapa[r.ejercicio];
       if(!gs) continue;
       for(const g of gs) cuenta[g] = (cuenta[g] || 0) + 1;
     }
@@ -1692,13 +1759,25 @@ function pintarAdherencia(){
 
   const porDia = {};
   for(const s of ses) porDia[s.dia] = (porDia[s.dia] || 0) + 1;
-  const faltan = RUTINA.filter(bq => (porDia[bq.id] || 0) < 3).map(bq => bq.corto);
+  const faltan = rutinaActiva().filter(bq => (porDia[bq.id] || 0) < 3).map(bq => bq.corto);
   const nota = document.createElement("p");
   nota.className = "nota";
   nota.textContent = faltan.length
     ? "Los que menos aparecen: "+faltan.join(", ")+". Si un día se cae siempre, mejor moverlo de sitio en la semana que seguir fallándolo."
     : "Los cinco días salen con regularidad.";
   cont.appendChild(nota);
+
+  const s = resumenSueno(14);
+  if(s.nSueno || s.nRecup){
+    const p2 = document.createElement("p");
+    p2.className = "nota";
+    const trozos = [];
+    if(s.nSueno) trozos.push("<b>"+fmt(Math.round(s.sueno*10)/10)+" h</b> de sueño de media");
+    if(s.nRecup) trozos.push("<b>"+Math.round(s.recup)+" %</b> de recuperación");
+    p2.innerHTML = "Últimas dos semanas: "+trozos.join(" y ")+"."
+      + (s.nSueno && s.sueno < 7 ? " Por debajo de 7 h el músculo no se construye igual: es el factor limitante más probable si algo se atasca." : "");
+    cont.appendChild(p2);
+  }
 }
 
 /* ---------- 2.1 / 2.2 historial por ejercicio ---------- */
@@ -2130,6 +2209,287 @@ function pintarRecetas(){
   }
 }
 
+/* ============================================================
+   FASE 4 — LOS DATOS
+   ============================================================ */
+
+/* ---------- 4.4 sueño y recuperación ---------- */
+function saludDe(f){ const s = leer("gc.salud") || {}; return s[f] || {}; }
+function salud(){
+  const su = document.getElementById("sueno");
+  const re = document.getElementById("recup");
+  const bt = document.getElementById("salud-btn");
+  const nt = document.getElementById("salud-nota");
+  const hoyDato = saludDe(FECHA);
+  if(hoyDato.sueno !== undefined) su.value = hoyDato.sueno;
+  if(hoyDato.recup !== undefined) re.value = hoyDato.recup;
+
+  bt.addEventListener("click", () => {
+    const h = parseFloat(su.value), r = parseFloat(re.value);
+    const todo = leer("gc.salud") || {};
+    const d = {};
+    if(isFinite(h) && h >= 0 && h <= 14) d.sueno = h;
+    if(isFinite(r) && r >= 0 && r <= 100) d.recup = r;
+    if(!Object.keys(d).length){ su.focus(); return; }
+    todo[FECHA] = d; escribir("gc.salud", todo);
+    nt.textContent = "Guardado" + (d.sueno !== undefined ? " · "+fmt(d.sueno)+" h" : "")
+      + (d.recup !== undefined ? " · "+d.recup+" % de recuperación" : "") + ".";
+  });
+}
+
+function resumenSueno(dias){
+  const todo = leer("gc.salud") || {};
+  const su = [], re = [];
+  for(const f of Object.keys(todo)){
+    const d = diasEntre(f, FECHA);
+    if(d < 0 || d >= dias) continue;
+    if(typeof todo[f].sueno === "number") su.push(todo[f].sueno);
+    if(typeof todo[f].recup === "number") re.push(todo[f].recup);
+  }
+  const media = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : null;
+  return { sueno:media(su), nSueno:su.length, recup:media(re), nRecup:re.length };
+}
+
+/* ---------- 4.1 CSV ---------- */
+function csvC(v){
+  v = (v === null || v === undefined) ? "" : String(v);
+  return /[";\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v;
+}
+function csv(filas){ return "﻿" + filas.map(f => f.map(csvC).join(";")).join("\r\n"); }
+
+function descargar(nombre, contenido, tipo){
+  const blob = new Blob([contenido], {type:tipo});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = nombre;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+function csvEntrenos(){
+  const filas = [["fecha","dia","bloque","ejercicio","sustituto","serie","peso_kg","reps","rir","nota_sesion"]];
+  for(const s of todasLasSesiones()){
+    const sus = s.sustitutos || {};
+    for(const r of s.series.slice().sort((a,b) => a.ejercicio.localeCompare(b.ejercicio,"es") || a.serie-b.serie)){
+      if(!r.hecha) continue;
+      filas.push([s.fecha, s.dia, s.nombre || "", r.ejercicio, sus[r.ejercicio] || "",
+        r.serie, r.peso === null || r.peso === undefined ? "" : r.peso,
+        r.reps === null || r.reps === undefined ? "" : r.reps,
+        r.rir === null || r.rir === undefined ? "" : r.rir,
+        s.nota || ""]);
+    }
+  }
+  return filas;
+}
+
+function csvPeso(){
+  const peso = leer(K.peso) || {};
+  const sal = leer("gc.salud") || {};
+  const fechas = Array.from(new Set(Object.keys(peso).concat(Object.keys(sal)))).sort();
+  const filas = [["fecha","peso_kg","sueno_horas","recuperacion_pct"]];
+  for(const f of fechas){
+    filas.push([f, peso[f] === undefined ? "" : peso[f],
+      sal[f] && sal[f].sueno !== undefined ? sal[f].sueno : "",
+      sal[f] && sal[f].recup !== undefined ? sal[f].recup : ""]);
+  }
+  return filas;
+}
+
+/* ---------- 4.2 recordatorio escalado ---------- */
+function pendientesCopia(){
+  const total = sesionesReales().length;
+  const ultima = leer(K.copia);
+  return {
+    total,
+    desde: ultima ? total - (ultima.sesiones || 0) : total,
+    dias: ultima ? diasEntre(ultima.fecha, FECHA) : null,
+    fecha: ultima ? ultima.fecha : null
+  };
+}
+
+function pintarBanner(){
+  const b = document.getElementById("banner-copia");
+  const p = pendientesCopia();
+  if(p.desde < 20){ b.hidden = true; return; }
+  b.hidden = false;
+  b.textContent = "Llevas " + p.desde + " sesiones sin exportar"
+    + (p.dias !== null ? " y " + p.dias + " días desde la última copia" : " y ninguna copia hecha")
+    + ". Tus datos viven solo en este móvil: baja hasta «Copia de seguridad» y exporta ahora.";
+}
+
+/* ---------- 4.3 editor de rutina ---------- */
+function renombrarEjercicio(viejo, nuevo){
+  if(viejo === nuevo || !nuevo) return;
+  for(const k of claves()){
+    if(k.indexOf(K.ses) !== 0) continue;
+    const s = leer(k);
+    if(!s || !Array.isArray(s.series)) continue;
+    let tocado = false;
+    for(const r of s.series) if(r.ejercicio === viejo){ r.ejercicio = nuevo; tocado = true; }
+    if(s.sustitutos && s.sustitutos[viejo] !== undefined){
+      s.sustitutos[nuevo] = s.sustitutos[viejo];
+      delete s.sustitutos[viejo];
+      tocado = true;
+    }
+    if(tocado) escribir(k, s);
+  }
+  if(descansos[viejo] !== undefined){
+    descansos[nuevo] = descansos[viejo];
+    delete descansos[viejo];
+    escribir(K.desc, descansos);
+  }
+}
+
+function editorFila(ej, borrar){
+  const caja = document.createElement("div");
+  caja.style.cssText = "border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:8px;background:var(--sunken)";
+
+  const nombre = document.createElement("input");
+  nombre.type = "text"; nombre.value = ej.n; nombre.dataset.campo = "n";
+  nombre.setAttribute("aria-label","Nombre del ejercicio");
+  nombre.style.cssText = "width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font-family:var(--font-b);font-size:14px;font-weight:600";
+
+  const fila = document.createElement("div");
+  fila.className = "fila"; fila.style.marginTop = "7px";
+
+  const series = document.createElement("input");
+  series.type = "number"; series.min = "1"; series.max = "10"; series.value = ej.s;
+  series.dataset.campo = "s"; series.setAttribute("aria-label","Series de "+ej.n);
+  series.style.cssText = "width:64px;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font-family:var(--font-d);font-size:17px;font-weight:600;text-align:center";
+
+  const reps = document.createElement("input");
+  reps.type = "text"; reps.value = ej.r; reps.dataset.campo = "r";
+  reps.setAttribute("aria-label","Rango de repeticiones de "+ej.n);
+  reps.style.cssText = "flex:1;min-width:74px;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font-family:var(--font-d);font-size:17px;font-weight:600;text-align:center";
+
+  const eti1 = document.createElement("span"); eti1.className = "nota"; eti1.style.margin = "0"; eti1.textContent = "series";
+  const eti2 = document.createElement("span"); eti2.className = "nota"; eti2.style.margin = "0"; eti2.textContent = "reps";
+
+  const quitar = document.createElement("button");
+  quitar.type = "button"; quitar.className = "mini"; quitar.textContent = "Quitar";
+  quitar.style.marginLeft = "auto";
+  quitar.addEventListener("click", () => borrar(caja));
+
+  fila.append(series, eti1, reps, eti2, quitar);
+  caja.append(nombre, fila);
+  caja.dataset.original = ej.n;
+  caja._ej = ej;
+  return caja;
+}
+
+function pintarEditor(){
+  const cont = document.getElementById("editor");
+  const b = bloque(dia);
+  document.getElementById("edit-dia").textContent = "D"+b.id+" · "+b.nombre;
+  document.getElementById("edit-restaurar").hidden = rutinaEsOriginal();
+  cont.textContent = "";
+
+  const cajas = [];
+  const borrar = caja => {
+    if(cajas.filter(c => !c.dataset.fuera).length <= 1) return;
+    caja.dataset.fuera = "1"; caja.hidden = true;
+  };
+  for(const ej of b.ejercicios){
+    const c = editorFila(ej, borrar);
+    cajas.push(c); cont.appendChild(c);
+  }
+
+  // Añadir ejercicio
+  const add = document.createElement("div");
+  add.style.cssText = "border:1px dashed var(--line);border-radius:8px;padding:10px;margin-top:10px";
+  const t = document.createElement("p"); t.className = "nota"; t.style.margin = "0 0 8px";
+  t.textContent = "Añadir un ejercicio a este día:";
+  const nNom = document.createElement("input");
+  nNom.type = "text"; nNom.placeholder = "Nombre del ejercicio";
+  nNom.setAttribute("aria-label","Nombre del ejercicio nuevo");
+  nNom.style.cssText = "width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font-family:var(--font-b);font-size:14px";
+  const f2 = document.createElement("div"); f2.className = "fila"; f2.style.marginTop = "7px";
+  const nSer = document.createElement("input");
+  nSer.type = "number"; nSer.min = "1"; nSer.max = "10"; nSer.value = "3";
+  nSer.setAttribute("aria-label","Series del ejercicio nuevo");
+  nSer.style.cssText = "width:64px;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font-family:var(--font-d);font-size:17px;font-weight:600;text-align:center";
+  const nRep = document.createElement("input");
+  nRep.type = "text"; nRep.value = "10-12";
+  nRep.setAttribute("aria-label","Rango de repeticiones del ejercicio nuevo");
+  nRep.style.cssText = "width:84px;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font-family:var(--font-d);font-size:17px;font-weight:600;text-align:center";
+  const nGrp = document.createElement("select");
+  nGrp.setAttribute("aria-label","Grupo muscular del ejercicio nuevo");
+  nGrp.style.flex = "1"; nGrp.style.minWidth = "120px";
+  for(const g of GRUPOS){
+    const o = document.createElement("option"); o.value = g.k; o.textContent = g.n; nGrp.appendChild(o);
+  }
+  f2.append(nSer, nRep, nGrp);
+  const nBt = document.createElement("button");
+  nBt.type = "button"; nBt.className = "btn sec"; nBt.textContent = "Añadir";
+  nBt.style.marginTop = "8px";
+  nBt.addEventListener("click", () => {
+    const nombre = nNom.value.trim();
+    if(!nombre){ nNom.focus(); return; }
+    const ej = { n:nombre, s:Math.max(1,Number(nSer.value)||3), r:nRep.value.trim() || "10-12",
+                 d:90, mg:[nGrp.value] };
+    const c = editorFila(ej, borrar);
+    c.dataset.nuevo = "1";
+    cajas.push(c); cont.insertBefore(c, add);
+    nNom.value = "";
+  });
+  add.append(t, nNom, f2, nBt);
+  cont.appendChild(add);
+
+  const guardar = document.createElement("button");
+  guardar.type = "button"; guardar.className = "btn"; guardar.textContent = "Guardar cambios";
+  guardar.style.marginTop = "12px";
+  const aviso = document.createElement("p"); aviso.className = "nota";
+
+  guardar.addEventListener("click", () => {
+    const nuevos = [];
+    const renombres = [];
+    for(const c of cajas){
+      if(c.dataset.fuera) continue;
+      const base = c._ej;
+      const nom = c.querySelector('input[data-campo="n"]').value.trim() || base.n;
+      const ser = Math.max(1, Math.min(10, Number(c.querySelector('input[data-campo="s"]').value) || base.s));
+      const rep = c.querySelector('input[data-campo="r"]').value.trim() || base.r;
+      const previo = c.dataset.original;
+      if(!c.dataset.nuevo && nom !== previo) renombres.push([previo, nom]);
+      const ej = Object.assign({}, base, { n:nom, s:ser, r:rep });
+      // Al renombrar, el grupo muscular viaja con el ejercicio
+      if(!ej.mg && MUSC[previo]) ej.mg = MUSC[previo];
+      nuevos.push(ej);
+    }
+    for(const [v,n] of renombres) renombrarEjercicio(v,n);
+
+    const rut = rutinaActiva().map(bq => bq.id === dia
+      ? Object.assign({}, bq, { ejercicios:nuevos })
+      : Object.assign({}, bq, { ejercicios:bq.ejercicios.slice() }));
+    guardarRutina(rut);
+
+    indexarUltimas(); cargarSesion(); pintarLista(); totales(); pintarEditor();
+    aviso.textContent = "Guardado." + (renombres.length ? " "+renombres.length+" ejercicio(s) renombrado(s), con su histórico." : "");
+    document.getElementById("editor").appendChild(aviso);
+  });
+
+  cont.appendChild(guardar);
+  cont.appendChild(aviso);
+}
+
+function editor(){
+  const bt = document.getElementById("edit-abrir");
+  const cont = document.getElementById("editor");
+  bt.addEventListener("click", () => {
+    const abrir = cont.hidden;
+    cont.hidden = !abrir;
+    bt.setAttribute("aria-expanded", String(abrir));
+    bt.textContent = abrir ? "Cerrar editor" : "Abrir editor";
+    if(abrir) pintarEditor();
+  });
+  document.getElementById("edit-restaurar").addEventListener("click", () => {
+    try{ localStorage.removeItem("gc.rutina"); }catch(e){}
+    RUTINA_ACT = null;
+    indexarUltimas(); cargarSesion(); pintarDias(); pintarLista(); totales();
+    if(!cont.hidden) pintarEditor();
+  });
+}
+
 /* ---------- vistas ---------- */
 function pintarProgreso(){
   pintarMeso();
@@ -2198,6 +2558,8 @@ totales();
 pintarNota();
 nota();
 pesoCorporal();
+salud();
+editor();
 copias();
 estadoCopia();
 vistas();
