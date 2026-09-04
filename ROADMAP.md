@@ -28,27 +28,30 @@ encuentras — que la app no tiene.
 Lo que usas con el móvil en la mano, sudando, entre serie y serie. **Es lo
 único que cambia tu experiencia diaria.** Todo lo demás es para después.
 
-### 1.1 ⬜ Cronómetro de descanso — *lo siguiente que construyo*
+### 1.1 ✅ Cronómetro de descanso
 
-El que has pedido. Cómo lo haría:
+El que pediste. Así ha quedado:
 
 | Detalle | Decisión |
 |---|---|
 | Arranque | **Automático al marcar el ✓.** Cero toques extra |
 | Dónde se ve | En la barra inferior, sustituyendo a las estadísticas mientras corre |
 | Descanso por defecto | Distinto según el ejercicio (ver abajo) |
-| Controles | −30s · +30s · saltar |
+| Controles | −30s · +30s · Listo |
 | Al terminar | Sonido y la barra en color |
 
 **Descansos por defecto**, porque no todos los ejercicios piden lo mismo:
 
 | Tipo | Ejemplos | Descanso |
 |---|---|---|
-| Básico pesado | Haka, peso muerto rumano, dominadas, press plano | **3 min** |
-| Accesorio | Prensa, jalones, remos, press militar | **2 min** |
-| Aislamiento | Laterales, curls, extensiones, gemelo | **1 min** |
+| Básico pesado | Haka, peso muerto rumano, dominadas, press plano mancuernas | **3:00** |
+| Accesorio pesado | Prensa, press inclinado, press militar, remo apoyo pecho, hip thrust | **2:30** |
+| Accesorio | Jalón al pecho, remo unilateral, búlgaras, press inclinado 30° | **2:00** |
+| Medio | Curls de bíceps, femorales, pullover, aperturas, extensión cuádriceps | **1:30** |
+| Aislamiento | Laterales, mariposa inversa, tríceps, gemelos, abdominales | **1:00** |
 
-Ajustables desde la propia app si ves que no te encajan.
+Ajustables ejercicio a ejercicio desde la propia app, en pasos de 15 s. Se
+recuerdan entre sesiones.
 
 > **Límite honesto de iOS:** el contador siempre te dará la hora correcta al
 > volver a la app, porque guarda el instante de fin y recalcula — nunca se
@@ -57,21 +60,22 @@ Ajustables desde la propia app si ves que no te encajan.
 > de notificaciones, y eso rompería el "sin servidor, sin coste". Lo mitigo con
 > el punto siguiente.
 
-### 1.2 ⬜ Mantener la pantalla encendida
+### 1.2 ✅ Mantener la pantalla encendida
 
 Bloqueo de suspensión mientras hay una sesión abierta. Así el móvil no se apaga
 entre series, el cronómetro queda a la vista y el pitido sí suena. Resuelve en
 la práctica la limitación de arriba.
 
-### 1.3 ⬜ Cronómetro para ejercicios de tiempo
+### 1.3 ✅ Cronómetro para ejercicios de tiempo
 
-La plancha del día 5 ya tiene el campo en segundos. Que el mismo cronómetro
-sirva de cuenta atrás para el ejercicio, no solo para el descanso.
+En la plancha del día 5, la casilla de peso se convierte en un botón
+**Empezar / Parar**. Cuenta hacia arriba y al parar escribe los segundos en su
+casilla.
 
-### 1.4 ⬜ Sugerencia de carga con doble progresión
+### 1.4 ✅ Sugerencia de carga con doble progresión
 
-Ahora la app te rellena con lo que hiciste la última vez. El salto siguiente es
-que aplique la regla sola:
+Ya no te rellena con lo de la última vez: aplica la regla y te propone el
+siguiente paso, con los campos precargados.
 
 - Si la última vez **llegaste al tope del rango en todas las series** → te
   propone **+2,5 kg** (o +5 en pierna) y las reps de abajo del rango.
@@ -81,24 +85,28 @@ que aplique la regla sola:
 
 Es exactamente la "sobrecarga automática" por la que Symmetry cobra premium.
 Aquí es una regla de treinta líneas porque tu rutina y tus rangos ya están
-dentro.
+dentro. Verificada con ocho casos de prueba sobre el código real.
 
-### 1.5 ⬜ Botón "máquina ocupada"
+### 1.5 ✅ Botón "máquina ocupada"
 
 En cada ejercicio, despliega sus sustituciones de la sección 6.4 del plan. Sin
-buscar el documento con las manos sudadas. La serie se registra igual, anotando
-qué ejercicio hiciste realmente.
+buscar el documento con las manos sudadas. Eliges una y queda anotada junto al
+ejercicio en la sesión, para que luego se sepa qué hiciste de verdad.
 
 ### 1.6 ⬜ Reordenar ejercicios sobre la marcha
 
-Arrastrar para cambiar el orden del día cuando el gimnasio está lleno. Que el
-registro refleje el orden real en que entrenaste.
+Arrastrar para cambiar el orden del día cuando el gimnasio está lleno.
 
-### 1.7 ⬜ Nota rápida de sesión
+**Aplazado a propósito:** arrastrar y soltar con el dedo es de lo más frágil que
+hay, y en la práctica no hace falta — puedes registrar los ejercicios en
+cualquier orden, a la app le da igual. Se hará solo si al usarla resulta que
+molesta de verdad.
 
-Un campo de texto al final: "hombro molestando", "dormí 5 h", "examen mañana".
-Treinta segundos para ti, y para mí es la mitad del contexto cuando analice por
-qué una semana salió mal.
+### 1.7 ✅ Nota rápida de sesión
+
+Campo de texto al final del día: "hombro molestando", "dormí 5 h", "examen
+mañana". Se guarda solo mientras escribes. Treinta segundos para ti, y para mí
+es la mitad del contexto cuando analice por qué una semana salió mal.
 
 ---
 
@@ -259,17 +267,18 @@ Yo iría así, y cada bloque es utilizable por sí solo:
 
 | Orden | Qué | Por qué ahora |
 |---|---|---|
-| **1** | 1.1 Cronómetro + 1.2 Pantalla encendida | Lo has pedido y es lo que más cambia el día a día. Van juntos porque el segundo arregla la limitación del primero |
-| **2** | 1.4 Sugerencia de carga | Convierte la regla de progresión en algo que no tienes que recordar |
-| **3** | 1.5 Máquina ocupada + 1.7 Nota de sesión | Baratos y quitan fricción real |
-| **4** | 2.3 Volumen semanal + 2.4 Peso con media móvil | Cuando tengas 4-6 semanas de datos y haya algo que mirar |
+| ~~1~~ | ✅ 1.1 Cronómetro + 1.2 Pantalla encendida | Hecho |
+| ~~2~~ | ✅ 1.4 Sugerencia de carga | Hecho |
+| ~~3~~ | ✅ 1.5 Máquina ocupada + 1.7 Nota de sesión + 1.3 Crono de tiempo | Hecho |
+| **4** | 2.3 Volumen semanal + 2.4 Peso con media móvil | **Siguiente.** Cuando tengas 4-6 semanas de datos y haya algo que mirar |
 | **5** | 2.5 Mesociclo + 2.1 Historial por ejercicio | Ya con el hábito montado |
 | **6** | Fase 3 completa | Cuando la parte de entreno esté rodada. Meter la dieta antes es dispersarse |
 | **7** | 4.3 Editar rutina + 4.4 Sueño | Cuando cambiemos de bloque, hacia marzo |
 
-**Nada de esto corre prisa.** El plan de volumen ya funciona con lo que hay hoy.
-Empieza a entrenar y a registrar: dentro de tres semanas sabrás por experiencia
-qué echas de menos de verdad, y casi nunca es lo que uno cree antes de empezar.
+**La fase 1 está entera y el resto no corre prisa.** Lo de la fase 2 solo tiene
+sentido con datos dentro: hoy no habría nada que dibujar. Empieza a entrenar y a
+registrar; dentro de tres semanas sabrás por experiencia qué echas de menos de
+verdad, y casi nunca es lo que uno cree antes de empezar.
 
 Si en ese momento algo de esta lista te sigue pareciendo importante, lo
 construimos. Y si aparece algo que no está aquí, mejor señal todavía.
