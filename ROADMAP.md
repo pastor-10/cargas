@@ -227,28 +227,48 @@ mismo.
 
 ## Fase 4 — Los datos
 
-### 4.1 ⬜ Exportar también en CSV
+### 4.1 ✅ Exportar también en CSV
 
-Ahora exporta JSON. Añadir CSV para que puedas abrirlo en Excel sin depender de
-mí.
+Dos CSV: uno de entrenos (fecha, día, ejercicio, sustituto, serie, peso, reps,
+RIR y nota de sesión) y otro de peso, sueño y recuperación. Separador punto y
+coma y BOM, para que Excel en español los abra sin tocar nada.
 
-### 4.2 ⬜ Recordatorio de copia más insistente
+**El JSON sigue siendo la única copia que restaura.** Los CSV son para mirar y
+para pasármelos.
 
-El aviso a las 12 sesiones está bien, pero debería ser más difícil de ignorar
-según se acumula. Tus datos viven solo en tu móvil: es el único riesgo real de
-todo el montaje.
+### 4.2 ✅ Recordatorio de copia escalado
 
-### 4.3 ⬜ Editar la rutina desde la app
+Dos escalones, porque tus datos viven solo en tu móvil y es el único riesgo
+real de todo el montaje:
 
-Cuando cambiemos de mesociclo o toques un ejercicio, poder hacerlo sin que yo
-edite el código. Con cuidado: los nombres de ejercicio son la clave del
-histórico, así que renombrar tiene que arrastrar los datos.
+| Sesiones sin exportar | Qué pasa |
+|---|---|
+| 12 | Aviso en la tarjeta de copia de seguridad |
+| 20 | Banner arriba del todo en la vista de Entreno, imposible de no ver |
 
-### 4.4 ⬜ Sueño y recuperación a mano
+Cuenta también los días desde la última copia, no solo las sesiones.
 
-Dos campos al día: horas de sueño y % de recuperación del Whoop. Los tecleas en
-diez segundos y me dan el contexto que más falta me hace para interpretar una
-semana mala.
+### 4.3 ✅ Editar la rutina desde la app
+
+Editor por día dentro de Entreno: cambiar series, repeticiones y nombre, quitar
+ejercicios y añadir nuevos indicando su grupo muscular. Con botón para volver a
+la rutina original.
+
+**Renombrar migra el histórico entero** — las series registradas, los sustitutos
+y el descanso que tuvieras configurado — y el grupo muscular viaja con el
+ejercicio, así que el volumen semanal sigue cuadrando después de renombrar.
+
+Por debajo, la rutina deja de ser una constante del código: todo se pinta desde
+la rutina activa, que es la tuya si la has editado y la de fábrica si no.
+
+### 4.4 ✅ Sueño y recuperación a mano
+
+Dos campos al día en Entreno: horas de sueño y % de recuperación del Whoop.
+Diez segundos. En Progreso sale la media de las últimas dos semanas, con el
+aviso de que por debajo de 7 h el sueño es el factor limitante más probable
+cuando algo se atasca.
+
+Ambos salen en el CSV y en la copia.
 
 ---
 
@@ -297,21 +317,20 @@ Yo iría así, y cada bloque es utilizable por sí solo:
 | ~~4~~ | ✅ 2.3 Volumen semanal + 2.4 Peso por semanas | Hecho |
 | ~~5~~ | ✅ 2.5 Mesociclo + 2.1 Historial + 2.2 1RM + 2.6 Adherencia | Hecho |
 | ~~6~~ | ✅ Fase 3 completa | Hecho |
-| **7** | 4.1 Exportar CSV · 4.3 Editar rutina · 4.4 Sueño | **Siguiente**, hacia marzo o cuando haga falta |
+| ~~7~~ | ✅ Fase 4 completa | Hecho |
 
-**Fases 1, 2 y 3 hechas. Lo que falta ahora no lo puedo construir yo: datos.**
+**El roadmap está terminado.** Las cuatro fases hechas, menos 1.6 (reordenar
+arrastrando), aplazado a propósito por frágil e innecesario.
 
-Entreno funciona desde el primer día. Progreso y el ajuste de calorías enseñan
-estados vacíos hasta que haya tres o cuatro semanas dentro — es lo correcto, no
-hay nada que dibujar todavía.
+Lo que falta ahora no lo puedo construir yo: **datos**. Entreno y Dieta
+funcionan desde el primer día. Progreso y el ajuste de calorías enseñan estados
+vacíos hasta que haya tres o cuatro semanas dentro — es lo correcto, no hay nada
+que dibujar todavía.
 
-Queda la fase 4, que es mantenimiento y no urge: exportar en CSV, editar la
-rutina sin tocar código y apuntar sueño y recuperación a mano. Tiene sentido
-hacia marzo, cuando cambiemos de bloque.
-
-A partir de aquí lo que mande debería salir de usarla, no de esta lista. Lo que
-pidas después de tres semanas entrenando valdrá más que cualquier cosa que yo
-haya escrito aquí antes de empezar.
+A partir de aquí esta lista deja de mandar. Lo que pidas después de tres semanas
+entrenando valdrá más que cualquier cosa que yo escribiera aquí antes de que
+empezaras. Si aparece algo que no está en este documento, mejor señal: querrá
+decir que la estás usando de verdad.
 
 Si en ese momento algo de esta lista te sigue pareciendo importante, lo
 construimos. Y si aparece algo que no está aquí, mejor señal todavía.
