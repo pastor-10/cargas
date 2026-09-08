@@ -578,80 +578,54 @@ select:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:
    alt sustituciones si la máquina está ocupada
    ============================================================ */
 const RUTINA = [
-  { id:1, nombre:"Pierna A", corto:"Pierna A", ejercicios:[
-    { n:"Haka", s:4, r:"8-10", d:180, inc:5,
-      alt:["Prensa","Sentadilla en multipower","Sentadilla libre"] },
-    { n:"Prensa", s:4, r:"10-12", d:150, inc:5,
-      alt:["Haka","Sentadilla goblet","Zancadas con mancuernas"] },
-    { n:"Extensión de cuádriceps", s:4, r:"12-15", d:90,
-      alt:["Extensión unilateral","Sissy squat","Zancadas"] },
-    { n:"Femoral sentado", s:4, r:"12-15", d:90,
-      alt:["Femoral tumbado","Peso muerto rumano con mancuernas"] },
-    { n:"Máquina de gemelo", s:4, r:"10-12", d:60,
-      alt:["Gemelo de pie en escalón","Gemelo en prensa"] },
-    { n:"Aductor", s:3, r:"10-12", d:60, opcional:true }
+  { id:1, nombre:"Pierna (correr)", corto:"Pierna", ejercicios:[
+    { n:"Peso muerto rumano", s:3, r:"6-10", d:150, inc:5,
+      alt:["RDL con mancuernas","Buenos días","Hiperextensiones lastradas"] },
+    { n:"Búlgaras", s:3, r:"8-12", d:120,
+      alt:["Zancadas","Prensa unilateral"] },
+    { n:"Hip thrust", s:3, r:"8-12", d:120, inc:5,
+      alt:["Puente de glúteo en el suelo con barra","Máquina de hip thrust"] },
+    { n:"Femoral sentado", s:3, r:"12-15", d:90,
+      alt:["Femoral tumbado","Curl nórdico"] },
+    { n:"Gemelo de pie", s:4, r:"8-12", d:90,
+      alt:["Gemelo en prensa","Gemelo en escalón con mancuerna"] },
+    { n:"Gemelo sentado", s:4, r:"15-20", d:60,
+      alt:["Gemelo sentado en máquina","Gemelo sentado con disco en la rodilla"] },
+    { n:"Plancha lateral", s:3, r:"—", d:45, sinCarga:true,
+      alt:["Plancha frontal","Pallof press"] }
   ]},
   { id:2, nombre:"Empuje", corto:"Empuje", ejercicios:[
-    { n:"Press plano con mancuernas", s:4, r:"8-10", d:180,
+    { n:"Press plano con mancuernas", s:3, r:"8-10", d:180,
       alt:["Press en máquina","Press banca con barra"] },
     { n:"Press inclinado", s:3, r:"8-12", d:150,
       alt:["Máquina de press inclinado","Mancuernas en banco a 30°","Multipower"] },
     { n:"Aperturas en polea", s:3, r:"12-15", d:90,
       alt:["Contractora (peck deck)","Aperturas con mancuernas"] },
-    { n:"Press militar con mancuernas", s:4, r:"8-10", d:150,
+    { n:"Press militar con mancuernas", s:3, r:"8-10", d:150,
       alt:["Press militar en máquina","Press militar con barra"] },
-    { n:"Elevaciones laterales en polea", s:4, r:"12-15", d:60,
+    { n:"Elevaciones laterales en polea", s:4, r:"12-20", d:60,
       alt:["Laterales con mancuernas","Máquina de laterales"] },
     { n:"Extensión de tríceps en polea", s:3, r:"10-12", d:60,
-      alt:["Press francés tumbado","Fondos en máquina"] },
-    { n:"Extensión de tríceps sobre cabeza", s:3, r:"10-12", d:60,
-      alt:["Mancuerna a dos manos sentado","Press francés sentado"] }
+      alt:["Press francés tumbado","Fondos en máquina"] }
   ]},
   { id:3, nombre:"Tirón", corto:"Tirón", ejercicios:[
     { n:"Dominadas", s:4, r:"5-10", d:180,
       alt:["Dominadas asistidas en máquina","Jalón agarre neutro","Negativas"] },
-    { n:"Remo con apoyo de pecho", s:4, r:"8-10", d:150,
+    { n:"Remo con apoyo de pecho", s:3, r:"8-10", d:150,
       alt:["Remo con barra","Remo con mancuerna a una mano","Remo en polea baja"] },
-    { n:"Jalón al pecho", s:4, r:"10-12", d:120,
+    { n:"Jalón al pecho", s:3, r:"10-12", d:120,
       alt:["Dominadas","Jalón unilateral en polea"] },
-    { n:"Remo sentado unilateral", s:3, r:"10-12", d:120,
-      alt:["Remo en polea baja","Remo con mancuerna"] },
-    { n:"Curl con mancuerna unilateral", s:4, r:"8-10", d:90,
-      alt:["Curl con barra Z","Curl en polea"] },
-    { n:"Curl de bíceps sentado", s:3, r:"8-12", d:90,
-      alt:["Curl inclinado","Curl en polea"] },
-    { n:"Curl martillo en polea", s:3, r:"12-15", d:60,
-      alt:["Curl martillo con mancuernas"] }
-  ]},
-  { id:4, nombre:"Pierna B", corto:"Pierna B", ejercicios:[
-    { n:"Peso muerto rumano", s:4, r:"6-10", d:180, inc:5,
-      alt:["RDL con mancuernas","Buenos días","Hiperextensiones lastradas"] },
-    { n:"Hip thrust", s:3, r:"8-12", d:150, inc:5,
-      alt:["Puente de glúteo en el suelo con barra","Máquina de hip thrust"] },
-    { n:"Búlgaras", s:3, r:"10-12", d:120,
-      alt:["Zancadas","Prensa unilateral"] },
-    { n:"Femoral tumbado", s:3, r:"10-15", d:90,
-      alt:["Femoral sentado","Curl nórdico"] },
-    { n:"Gemelo sentado", s:4, r:"12-20", d:60,
-      alt:["Gemelo de pie","Gemelo en prensa"] },
-    { n:"Abdominales en polea", s:3, r:"10-15", d:60,
-      alt:["Crunch","Elevaciones de piernas"] }
-  ]},
-  { id:5, nombre:"Estética", corto:"Estética", ejercicios:[
-    { n:"Elevaciones laterales", s:4, r:"12-20", d:60,
-      alt:["Laterales en polea","Máquina de laterales"] },
     { n:"Mariposa inversa", s:4, r:"15-20", d:60,
       alt:["Pájaros con mancuernas en banco a 30°","Face pull en polea"] },
-    { n:"Press inclinado 30°", s:3, r:"8-12", d:120,
-      alt:["Máquina de press inclinado","Multipower"] },
-    { n:"Pullover en polea alta", s:3, r:"12-15", d:90,
-      alt:["Pullover con mancuerna"] },
-    { n:"Curl inclinado con mancuernas", s:3, r:"10-15", d:90,
-      alt:["Curl sentado","Curl en polea"] },
-    { n:"Extensión de tríceps en polea", s:3, r:"10-15", d:60,
-      alt:["Press francés tumbado","Fondos en máquina"] },
-    { n:"Plancha o rueda abdominal", s:3, r:"—", d:60, sinCarga:true,
-      alt:["Plancha","Rueda abdominal","Abdominales en polea"] }
+    { n:"Curl con mancuerna unilateral", s:3, r:"8-10", d:90,
+      alt:["Curl con barra Z","Curl en polea"] },
+    { n:"Curl martillo en polea", s:2, r:"12-15", d:60,
+      alt:["Curl martillo con mancuernas"] }
+  ]},
+  { id:4, nombre:"Carrera", corto:"Carrera", ejercicios:[
+    { n:"Rodaje fácil", s:1, r:"—", d:0, carrera:true },
+    { n:"Calidad", s:1, r:"—", d:0, carrera:true },
+    { n:"Tirada larga", s:1, r:"—", d:0, carrera:true }
   ]}
 ];
 
@@ -1017,16 +991,19 @@ function tarjeta(ej){
 
 function cabeceraSeries(ej){
   const h = document.createElement("div"); h.className = "cab-serie";
-  for(const x of ["#", ej.sinCarga ? "Crono" : "Peso", ej.sinCarga ? "Seg." : "Reps", "RIR", ""]){
+  const cols = ej.carrera
+    ? ["#", "Km", "Minutos", "", ""]
+    : ["#", ej.sinCarga ? "Crono" : "Peso", ej.sinCarga ? "Seg." : "Reps", "RIR", ""];
+  for(const x of cols){
     const s = document.createElement("span"); s.textContent = x; h.appendChild(s);
   }
   return h;
 }
 
-function campo(unidad,valor){
+function campo(unidad,valor,paso){
   const d = document.createElement("div"); d.className = "campo";
   const i = document.createElement("input");
-  i.type = "number"; i.inputMode = "decimal"; i.step = "0.5"; i.min = "0";
+  i.type = "number"; i.inputMode = "decimal"; i.step = paso || "0.5"; i.min = "0";
   if(valor !== null && valor !== undefined) i.value = valor;
   const u = document.createElement("u"); u.textContent = unidad;
   d.append(i,u);
@@ -1050,10 +1027,14 @@ function filaSerie(ej,i,cuenta,art,sug){
   const n = document.createElement("div"); n.className = "n"; n.textContent = i;
 
   let cPeso, cReps;
-  cReps = campo(ej.sinCarga ? "seg" : "reps", repsPre);
+  cReps = campo(ej.carrera ? "min" : (ej.sinCarga ? "seg" : "reps"), repsPre, ej.carrera ? "1" : null);
   cReps.querySelector("input").setAttribute("aria-label", ej.n+" serie "+i+", "+(ej.sinCarga?"segundos":"repeticiones"));
 
-  if(ej.sinCarga){
+  if(ej.carrera){
+    cPeso = campo("km", pesoPre, "0.1");
+    cPeso.querySelector("input").setAttribute("aria-label", ej.n+", kilómetros");
+    cReps.querySelector("input").setAttribute("aria-label", ej.n+", minutos");
+  }else if(ej.sinCarga){
     // En ejercicios de tiempo, la casilla de peso se convierte en cronómetro
     cPeso = document.createElement("button");
     cPeso.type = "button"; cPeso.className = "crono-serie"; cPeso.textContent = "Empezar";
@@ -1074,10 +1055,12 @@ function filaSerie(ej,i,cuenta,art,sug){
     cPeso.querySelector("input").setAttribute("aria-label", ej.n+" serie "+i+", peso en kilos");
   }
 
-  const rir = document.createElement("div"); rir.className = "rir";
+  const rir = document.createElement("div");
   let rirVal = (rirPre === undefined) ? null : rirPre;
   const botones = [];
-  for(let r=0;r<=4;r++){
+  if(ej.carrera){ rir.style.width = "0"; }
+  else{ rir.className = "rir"; }
+  for(let r=0; !ej.carrera && r<=4; r++){
     const b = document.createElement("button");
     b.type = "button"; b.dataset.r = String(r); b.textContent = r;
     b.setAttribute("aria-label","RIR "+r);
@@ -1116,7 +1099,7 @@ function filaSerie(ej,i,cuenta,art,sug){
       fila.classList.add("hecha");
       registrar();
       if(crono && crono.subida) pararCrono();
-      if(i < ej.s) arrancarDescanso(ej);   // la última serie no necesita descanso
+      if(i < ej.s && !ej.carrera) arrancarDescanso(ej);   // ni última serie ni carrera
       else pararCrono();
     }else{
       fila.classList.remove("hecha");
@@ -1205,12 +1188,26 @@ function pieEjercicio(ej, art){
 }
 
 function totales(){
-  const objetivo = bloque(dia).ejercicios.reduce((a,e) => a + e.s, 0);
+  const b = bloque(dia);
+  const objetivo = b.ejercicios.reduce((a,e) => a + e.s, 0);
   const hechas = sesion.series.filter(s => s.hecha).length;
-  let ton = 0;
-  for(const s of sesion.series){ if(s.hecha && s.peso && s.reps) ton += s.peso * s.reps; }
+  const corriendo = new Set(b.ejercicios.filter(e => e.carrera).map(e => e.n));
+  let ton = 0, km = 0;
+  for(const s of sesion.series){
+    if(!s.hecha) continue;
+    if(corriendo.has(s.ejercicio)){ km += Number(s.peso) || 0; continue; }
+    if(s.peso && s.reps) ton += s.peso * s.reps;
+  }
   document.getElementById("st-series").textContent = hechas+"/"+objetivo;
-  document.getElementById("st-tonelaje").textContent = Math.round(ton).toLocaleString("es-ES");
+  const cifra = document.getElementById("st-tonelaje");
+  const rotulo = cifra.parentNode.querySelector("span");
+  if(km > 0){
+    cifra.textContent = (Math.round(km*10)/10).toLocaleString("es-ES");
+    rotulo.textContent = "km";
+  }else{
+    cifra.textContent = Math.round(ton).toLocaleString("es-ES");
+    rotulo.textContent = "kg movidos";
+  }
 }
 
 /* ---------- nota de sesión ---------- */
@@ -1349,36 +1346,42 @@ function copias(){
    (el peso muerto rumano cuenta para isquios y para glúteo), igual que
    en la tabla de volumen del plan. */
 const MUSC = {
-  "Haka":["cuadriceps"], "Prensa":["cuadriceps"], "Extensión de cuádriceps":["cuadriceps"],
-  "Femoral sentado":["isquios"], "Máquina de gemelo":["gemelo"], "Aductor":["aductor"],
+  "Peso muerto rumano":["isquios","gluteo"], "Búlgaras":["cuadriceps","gluteo"],
+  "Hip thrust":["gluteo"], "Femoral sentado":["isquios"],
+  "Gemelo de pie":["gemelo"], "Gemelo sentado":["gemelo"], "Plancha lateral":["core"],
   "Press plano con mancuernas":["pecho"], "Press inclinado":["pecho"], "Aperturas en polea":["pecho"],
   "Press militar con mancuernas":["hombro_frontal"], "Elevaciones laterales en polea":["hombro_lateral"],
-  "Extensión de tríceps en polea":["triceps"], "Extensión de tríceps sobre cabeza":["triceps"],
+  "Extensión de tríceps en polea":["triceps"],
   "Dominadas":["espalda"], "Remo con apoyo de pecho":["espalda"], "Jalón al pecho":["espalda"],
-  "Remo sentado unilateral":["espalda"], "Curl con mancuerna unilateral":["biceps"],
-  "Curl de bíceps sentado":["biceps"], "Curl martillo en polea":["biceps"],
-  "Peso muerto rumano":["isquios","gluteo"], "Hip thrust":["gluteo"], "Búlgaras":["cuadriceps","gluteo"],
-  "Femoral tumbado":["isquios"], "Gemelo sentado":["gemelo"], "Abdominales en polea":["core"],
-  "Elevaciones laterales":["hombro_lateral"], "Mariposa inversa":["hombro_posterior"],
+  "Mariposa inversa":["hombro_posterior"],
+  "Curl con mancuerna unilateral":["biceps"], "Curl martillo en polea":["biceps"],
+  /* Del plan completo, por si vuelven o quedan en el histórico */
+  "Haka":["cuadriceps"], "Prensa":["cuadriceps"], "Extensión de cuádriceps":["cuadriceps"],
+  "Máquina de gemelo":["gemelo"], "Aductor":["aductor"], "Femoral tumbado":["isquios"],
+  "Abdominales en polea":["core"], "Elevaciones laterales":["hombro_lateral"],
   "Press inclinado 30°":["pecho"], "Pullover en polea alta":["espalda"],
-  "Curl inclinado con mancuernas":["biceps"], "Plancha o rueda abdominal":["core"]
+  "Curl inclinado con mancuernas":["biceps"], "Curl de bíceps sentado":["biceps"],
+  "Remo sentado unilateral":["espalda"], "Extensión de tríceps sobre cabeza":["triceps"],
+  "Plancha o rueda abdominal":["core"]
 };
 
-/* Objetivos semanales: la columna "ahora" de la tabla de la sección 6 del plan. */
+
+/* Objetivos semanales del BLOQUE DE MEDIA MARATÓN (8 sep - 15 nov 2026).
+   Son de mantenimiento, no de crecimiento: el estímulo grande de pierna
+   ahora lo da correr. Vuelven a los del plan completo el 16 de noviembre. */
 const GRUPOS = [
-  {k:"pecho",            n:"Pecho",            obj:13},
-  {k:"espalda",          n:"Espalda",          obj:18},
-  {k:"hombro_lateral",   n:"Hombro lateral",   obj:8},
+  {k:"pecho",            n:"Pecho",            obj:9},
+  {k:"espalda",          n:"Espalda",          obj:10},
+  {k:"hombro_lateral",   n:"Hombro lateral",   obj:4},
   {k:"hombro_posterior", n:"Hombro posterior", obj:4},
-  {k:"hombro_frontal",   n:"Hombro frontal",   obj:4},
-  {k:"cuadriceps",       n:"Cuádriceps",       obj:15},
-  {k:"isquios",          n:"Isquios",          obj:11},
-  {k:"gluteo",           n:"Glúteo",           obj:10},
+  {k:"hombro_frontal",   n:"Hombro frontal",   obj:3},
+  {k:"cuadriceps",       n:"Cuádriceps",       obj:3},
+  {k:"isquios",          n:"Isquios",          obj:6},
+  {k:"gluteo",           n:"Glúteo",           obj:9},
   {k:"gemelo",           n:"Gemelo",           obj:8},
-  {k:"biceps",           n:"Bíceps",           obj:13},
-  {k:"triceps",          n:"Tríceps",          obj:9},
-  {k:"core",             n:"Core",             obj:6},
-  {k:"aductor",          n:"Aductor",          obj:3}
+  {k:"biceps",           n:"Bíceps",           obj:5},
+  {k:"triceps",          n:"Tríceps",          obj:3},
+  {k:"core",             n:"Core",             obj:3}
 ];
 
 /* Grupos por nombre de ejercicio: la tabla de fábrica, más lo que traiga
@@ -1851,7 +1854,7 @@ function pintarAdherencia(){
   const ses = sesionesReales().filter(s => diasEntre(s.fecha, FECHA) <= 27 && diasEntre(s.fecha, FECHA) >= 0);
   if(!ses.length){ vacio(cont, "Sin sesiones en las últimas cuatro semanas."); return; }
 
-  const objetivo = 20; // 5 días × 4 semanas
+  const objetivo = 24; // 6 sesiones × 4 semanas (3 gimnasio + 3 carrera)
   const hero = document.createElement("div"); hero.className = "hero";
   const b = document.createElement("b"); b.textContent = ses.length+" / "+objetivo;
   const sp = document.createElement("span"); sp.textContent = "sesiones en 4 semanas";
