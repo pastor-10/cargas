@@ -579,20 +579,22 @@ select:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:
    ============================================================ */
 const RUTINA = [
   { id:1, nombre:"Pierna (correr)", corto:"Pierna", ejercicios:[
+    { n:"Extensión de cuádriceps", s:3, r:"12-15", d:90,
+      alt:["Extensión unilateral","Sentadilla sissy controlada"] },
+    { n:"Prensa", s:3, r:"8-12", d:150, inc:5,
+      alt:["Haka","Sentadilla goblet","Prensa unilateral"] },
     { n:"Peso muerto rumano", s:3, r:"6-10", d:150, inc:5,
       alt:["RDL con mancuernas","Buenos días","Hiperextensiones lastradas"] },
     { n:"Búlgaras", s:3, r:"8-12", d:120,
       alt:["Zancadas","Prensa unilateral"] },
-    { n:"Hip thrust", s:3, r:"8-12", d:120, inc:5,
-      alt:["Puente de glúteo en el suelo con barra","Máquina de hip thrust"] },
     { n:"Femoral sentado", s:3, r:"12-15", d:90,
       alt:["Femoral tumbado","Curl nórdico"] },
     { n:"Gemelo de pie", s:4, r:"8-12", d:90,
       alt:["Gemelo en prensa","Gemelo en escalón con mancuerna"] },
     { n:"Gemelo sentado", s:4, r:"15-20", d:60,
       alt:["Gemelo sentado en máquina","Gemelo sentado con disco en la rodilla"] },
-    { n:"Plancha lateral", s:3, r:"—", d:45, sinCarga:true,
-      alt:["Plancha frontal","Pallof press"] }
+    { n:"Equilibrio a una pierna", s:3, r:"—", d:30, sinCarga:true,
+      alt:["De pie sobre un cojín","Con los ojos cerrados","Pasando un balón de mano a mano"] }
   ]},
   { id:2, nombre:"Empuje", corto:"Empuje", ejercicios:[
     { n:"Press plano con mancuernas", s:3, r:"8-10", d:180,
@@ -622,7 +624,21 @@ const RUTINA = [
     { n:"Curl martillo en polea", s:2, r:"12-15", d:60,
       alt:["Curl martillo con mancuernas"] }
   ]},
-  { id:4, nombre:"Carrera", corto:"Carrera", ejercicios:[
+  { id:4, nombre:"Estética", corto:"Estética", ejercicios:[
+    { n:"Elevaciones laterales", s:4, r:"12-20", d:60,
+      alt:["Laterales en polea","Máquina de laterales"] },
+    { n:"Mariposa inversa", s:3, r:"15-20", d:60,
+      alt:["Pájaros con mancuernas en banco a 30°","Face pull en polea"] },
+    { n:"Press inclinado 30°", s:3, r:"8-12", d:120,
+      alt:["Máquina de press inclinado","Multipower"] },
+    { n:"Curl inclinado con mancuernas", s:3, r:"10-15", d:90,
+      alt:["Curl sentado","Curl en polea"] },
+    { n:"Extensión de tríceps sobre cabeza", s:3, r:"10-15", d:60,
+      alt:["Mancuerna a dos manos sentado","Press francés sentado"] },
+    { n:"Plancha lateral", s:3, r:"—", d:45, sinCarga:true,
+      alt:["Plancha frontal","Pallof press"] }
+  ]},
+  { id:5, nombre:"Carrera", corto:"Carrera", ejercicios:[
     { n:"Rodaje fácil", s:1, r:"—", d:0, carrera:true },
     { n:"Calidad", s:1, r:"—", d:0, carrera:true },
     { n:"Tirada larga", s:1, r:"—", d:0, carrera:true }
@@ -1346,41 +1362,45 @@ function copias(){
    (el peso muerto rumano cuenta para isquios y para glúteo), igual que
    en la tabla de volumen del plan. */
 const MUSC = {
+  "Extensión de cuádriceps":["cuadriceps"], "Prensa":["cuadriceps"],
   "Peso muerto rumano":["isquios","gluteo"], "Búlgaras":["cuadriceps","gluteo"],
-  "Hip thrust":["gluteo"], "Femoral sentado":["isquios"],
-  "Gemelo de pie":["gemelo"], "Gemelo sentado":["gemelo"], "Plancha lateral":["core"],
+  "Femoral sentado":["isquios"],
+  "Gemelo de pie":["gemelo"], "Gemelo sentado":["gemelo"],
   "Press plano con mancuernas":["pecho"], "Press inclinado":["pecho"], "Aperturas en polea":["pecho"],
   "Press militar con mancuernas":["hombro_frontal"], "Elevaciones laterales en polea":["hombro_lateral"],
   "Extensión de tríceps en polea":["triceps"],
   "Dominadas":["espalda"], "Remo con apoyo de pecho":["espalda"], "Jalón al pecho":["espalda"],
   "Mariposa inversa":["hombro_posterior"],
   "Curl con mancuerna unilateral":["biceps"], "Curl martillo en polea":["biceps"],
-  /* Del plan completo, por si vuelven o quedan en el histórico */
-  "Haka":["cuadriceps"], "Prensa":["cuadriceps"], "Extensión de cuádriceps":["cuadriceps"],
-  "Máquina de gemelo":["gemelo"], "Aductor":["aductor"], "Femoral tumbado":["isquios"],
-  "Abdominales en polea":["core"], "Elevaciones laterales":["hombro_lateral"],
-  "Press inclinado 30°":["pecho"], "Pullover en polea alta":["espalda"],
-  "Curl inclinado con mancuernas":["biceps"], "Curl de bíceps sentado":["biceps"],
-  "Remo sentado unilateral":["espalda"], "Extensión de tríceps sobre cabeza":["triceps"],
-  "Plancha o rueda abdominal":["core"]
+  "Elevaciones laterales":["hombro_lateral"], "Press inclinado 30°":["pecho"],
+  "Curl inclinado con mancuernas":["biceps"], "Extensión de tríceps sobre cabeza":["triceps"],
+  "Plancha lateral":["core"],
+  /* Propiocepcion para el tobillo: no suma volumen de ningun grupo, y es a proposito */
+  "Equilibrio a una pierna":[],
+  /* Del plan completo, para que el histórico siga contando */
+  "Haka":["cuadriceps"], "Máquina de gemelo":["gemelo"], "Aductor":["aductor"],
+  "Femoral tumbado":["isquios"], "Hip thrust":["gluteo"], "Abdominales en polea":["core"],
+  "Pullover en polea alta":["espalda"], "Curl de bíceps sentado":["biceps"],
+  "Remo sentado unilateral":["espalda"], "Plancha o rueda abdominal":["core"]
 };
 
 
-/* Objetivos semanales del BLOQUE DE MEDIA MARATÓN (8 sep - 15 nov 2026).
-   Son de mantenimiento, no de crecimiento: el estímulo grande de pierna
-   ahora lo da correr. Vuelven a los del plan completo el 16 de noviembre. */
+/* Objetivos semanales del BLOQUE DE MEDIA MARATÓN (8 sep - 15 nov 2026),
+   con el cuarto día de gimnasio. El tren superior vuelve casi a los valores
+   del plan completo; la pierna se queda en carga de mantenimiento porque el
+   estímulo grande lo da correr. Vuelven a los del plan el 16 de noviembre. */
 const GRUPOS = [
-  {k:"pecho",            n:"Pecho",            obj:9},
+  {k:"pecho",            n:"Pecho",            obj:12},
   {k:"espalda",          n:"Espalda",          obj:10},
-  {k:"hombro_lateral",   n:"Hombro lateral",   obj:4},
-  {k:"hombro_posterior", n:"Hombro posterior", obj:4},
+  {k:"hombro_lateral",   n:"Hombro lateral",   obj:8},
+  {k:"hombro_posterior", n:"Hombro posterior", obj:7},
   {k:"hombro_frontal",   n:"Hombro frontal",   obj:3},
-  {k:"cuadriceps",       n:"Cuádriceps",       obj:3},
+  {k:"cuadriceps",       n:"Cuádriceps",       obj:9},
   {k:"isquios",          n:"Isquios",          obj:6},
-  {k:"gluteo",           n:"Glúteo",           obj:9},
+  {k:"gluteo",           n:"Glúteo",           obj:6},
   {k:"gemelo",           n:"Gemelo",           obj:8},
-  {k:"biceps",           n:"Bíceps",           obj:5},
-  {k:"triceps",          n:"Tríceps",          obj:3},
+  {k:"biceps",           n:"Bíceps",           obj:8},
+  {k:"triceps",          n:"Tríceps",          obj:6},
   {k:"core",             n:"Core",             obj:3}
 ];
 
@@ -1854,7 +1874,7 @@ function pintarAdherencia(){
   const ses = sesionesReales().filter(s => diasEntre(s.fecha, FECHA) <= 27 && diasEntre(s.fecha, FECHA) >= 0);
   if(!ses.length){ vacio(cont, "Sin sesiones en las últimas cuatro semanas."); return; }
 
-  const objetivo = 24; // 6 sesiones × 4 semanas (3 gimnasio + 3 carrera)
+  const objetivo = 28; // 7 sesiones × 4 semanas (4 gimnasio + 3 carrera)
   const hero = document.createElement("div"); hero.className = "hero";
   const b = document.createElement("b"); b.textContent = ses.length+" / "+objetivo;
   const sp = document.createElement("span"); sp.textContent = "sesiones en 4 semanas";
