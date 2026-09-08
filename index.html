@@ -578,7 +578,7 @@ select:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:
    alt sustituciones si la máquina está ocupada
    ============================================================ */
 const RUTINA = [
-  { id:1, nombre:"Pierna (correr)", corto:"Pierna", ejercicios:[
+  { id:1, ds:"LUN", nombre:"Pierna (correr)", corto:"Pierna", ejercicios:[
     { n:"Extensión de cuádriceps", s:3, r:"12-15", d:90,
       alt:["Extensión unilateral","Sentadilla sissy controlada"] },
     { n:"Prensa", s:3, r:"8-12", d:150, inc:5,
@@ -596,7 +596,7 @@ const RUTINA = [
     { n:"Equilibrio a una pierna", s:3, r:"—", d:30, sinCarga:true,
       alt:["De pie sobre un cojín","Con los ojos cerrados","Pasando un balón de mano a mano"] }
   ]},
-  { id:2, nombre:"Empuje", corto:"Empuje", ejercicios:[
+  { id:2, ds:"JUE", nombre:"Empuje", corto:"Empuje", ejercicios:[
     { n:"Press plano con mancuernas", s:3, r:"8-10", d:180,
       alt:["Press en máquina","Press banca con barra"] },
     { n:"Press inclinado", s:3, r:"8-12", d:150,
@@ -610,7 +610,7 @@ const RUTINA = [
     { n:"Extensión de tríceps en polea", s:3, r:"10-12", d:60,
       alt:["Press francés tumbado","Fondos en máquina"] }
   ]},
-  { id:3, nombre:"Tirón", corto:"Tirón", ejercicios:[
+  { id:3, ds:"VIE", nombre:"Tirón", corto:"Tirón", ejercicios:[
     { n:"Dominadas", s:4, r:"5-10", d:180,
       alt:["Dominadas asistidas en máquina","Jalón agarre neutro","Negativas"] },
     { n:"Remo con apoyo de pecho", s:3, r:"8-10", d:150,
@@ -624,7 +624,7 @@ const RUTINA = [
     { n:"Curl martillo en polea", s:2, r:"12-15", d:60,
       alt:["Curl martillo con mancuernas"] }
   ]},
-  { id:4, nombre:"Estética", corto:"Estética", ejercicios:[
+  { id:4, ds:"MIÉ", nombre:"Estética", corto:"Estética", ejercicios:[
     { n:"Elevaciones laterales", s:4, r:"12-20", d:60,
       alt:["Laterales en polea","Máquina de laterales"] },
     { n:"Mariposa inversa", s:3, r:"15-20", d:60,
@@ -638,7 +638,7 @@ const RUTINA = [
     { n:"Plancha lateral", s:3, r:"—", d:45, sinCarga:true,
       alt:["Plancha frontal","Pallof press"] }
   ]},
-  { id:5, nombre:"Carrera", corto:"Carrera", ejercicios:[
+  { id:5, ds:"×3", nombre:"Carrera", corto:"Carrera", ejercicios:[
     { n:"Rodaje fácil", s:1, r:"—", d:0, carrera:true },
     { n:"Calidad", s:1, r:"—", d:0, carrera:true },
     { n:"Tirada larga", s:1, r:"—", d:0, carrera:true }
@@ -907,14 +907,17 @@ async function mantenerPantalla(){
 /* ============================================================
    RENDER
    ============================================================ */
+const ORDEN_SEMANA = [1,4,2,3,5];   // lun Pierna · mié Estética · jue Empuje · vie Tirón · carrera
+
 function pintarDias(){
   const cont = document.getElementById("dias");
   cont.textContent = "";
-  for(const b of rutinaActiva()){
+  const orden = ORDEN_SEMANA.map(id => rutinaActiva().find(b => b.id === id)).filter(Boolean);
+  for(const b of (orden.length === rutinaActiva().length ? orden : rutinaActiva())){
     const bt = document.createElement("button");
     bt.type = "button"; bt.className = "dia";
     bt.setAttribute("aria-pressed", String(b.id === dia));
-    const n = document.createElement("b"); n.textContent = "D"+b.id;
+    const n = document.createElement("b"); n.textContent = b.ds || ("D"+b.id);
     const s = document.createElement("span"); s.textContent = b.corto;
     bt.append(n,s);
     bt.addEventListener("click", () => {
@@ -1174,6 +1177,16 @@ function pieEjercicio(ej, art){
       });
       alts.appendChild(b);
     }
+  }
+
+  // Corriendo no hay descanso entre series que configurar
+  if(ej.carrera){
+    const envoltura0 = document.createDocumentFragment();
+    envoltura0.appendChild(pie);
+    envoltura0.appendChild(alts);
+    const cont0 = document.createElement("div");
+    cont0.appendChild(envoltura0);
+    return cont0;
   }
 
   const ctrl = document.createElement("div"); ctrl.className = "desc-ctrl";
