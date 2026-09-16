@@ -193,6 +193,10 @@ h1{
   cursor:pointer; color:var(--ink-3); display:flex; align-items:center; justify-content:center; font-size:18px; line-height:1;
 }
 .serie.hecha .check{background:var(--done); border-color:var(--done); color:#fff}
+/* Serie registrada por debajo del RIR objetivo: ni error ni fallo, solo un
+   aviso de que fue más dura de lo planeado. */
+.serie.pasado .check{background:var(--warn); border-color:var(--warn)}
+.serie.pasado .n{color:var(--warn); font-weight:700}
 .serie.hecha .campo input{border-color:var(--done)}
 .cab-serie{
   display:grid; grid-template-columns:20px 1fr 1fr auto 42px; gap:8px; padding:10px 0 4px;
@@ -578,7 +582,7 @@ select:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:
    alt sustituciones si la máquina está ocupada
    ============================================================ */
 const RUTINA = [
-  { id:1, ds:"LUN", nombre:"Pierna (correr)", corto:"Pierna", ejercicios:[
+  { id:1, ds:"LUN", nombre:"Pierna (correr)", corto:"Pierna", rirObj:3, ejercicios:[
     { n:"Extensión de cuádriceps", s:3, r:"12-15", d:90,
       alt:["Extensión unilateral","Sentadilla sissy controlada"] },
     { n:"Prensa", s:3, r:"8-12", d:150, inc:5,
@@ -596,7 +600,7 @@ const RUTINA = [
     { n:"Equilibrio a una pierna", s:3, r:"—", d:30, sinCarga:true,
       alt:["De pie sobre un cojín","Con los ojos cerrados","Pasando un balón de mano a mano"] }
   ]},
-  { id:2, ds:"JUE", nombre:"Empuje", corto:"Empuje", ejercicios:[
+  { id:2, ds:"JUE", nombre:"Empuje", corto:"Empuje", rirObj:2, ejercicios:[
     { n:"Press plano con mancuernas", s:3, r:"8-10", d:180,
       alt:["Press en máquina","Press banca con barra"] },
     { n:"Press inclinado", s:3, r:"8-12", d:150,
@@ -610,7 +614,7 @@ const RUTINA = [
     { n:"Extensión de tríceps en polea", s:3, r:"10-12", d:60,
       alt:["Press francés tumbado","Fondos en máquina"] }
   ]},
-  { id:3, ds:"VIE", nombre:"Tirón", corto:"Tirón", ejercicios:[
+  { id:3, ds:"VIE", nombre:"Tirón", corto:"Tirón", rirObj:2, ejercicios:[
     { n:"Dominadas", s:4, r:"5-10", d:180,
       alt:["Dominadas asistidas en máquina","Jalón agarre neutro","Negativas"] },
     { n:"Remo con apoyo de pecho", s:3, r:"8-10", d:150,
@@ -624,7 +628,7 @@ const RUTINA = [
     { n:"Curl martillo en polea", s:2, r:"12-15", d:60,
       alt:["Curl martillo con mancuernas"] }
   ]},
-  { id:4, ds:"MIÉ", nombre:"Estética", corto:"Estética", ejercicios:[
+  { id:4, ds:"MIÉ", nombre:"Estética", corto:"Estética", rirObj:2, ejercicios:[
     { n:"Elevaciones laterales", s:4, r:"12-20", d:60,
       alt:["Laterales en polea","Máquina de laterales"] },
     { n:"Mariposa inversa", s:3, r:"15-20", d:60,
@@ -1010,9 +1014,11 @@ function tarjeta(ej){
 
 function cabeceraSeries(ej){
   const h = document.createElement("div"); h.className = "cab-serie";
+  const obj = bloque(dia).rirObj;
   const cols = ej.carrera
     ? ["#", "Km", "Minutos", "", ""]
-    : ["#", ej.sinCarga ? "Crono" : "Peso", ej.sinCarga ? "Seg." : "Reps", "RIR", ""];
+    : ["#", ej.sinCarga ? "Crono" : "Peso", ej.sinCarga ? "Seg." : "Reps",
+       obj ? "RIR → " + obj : "RIR", ""];
   for(const x of cols){
     const s = document.createElement("span"); s.textContent = x; h.appendChild(s);
   }
@@ -1037,8 +1043,11 @@ function filaSerie(ej,i,cuenta,art,sug){
   // Prioridad de precarga: lo ya registrado hoy > sugerencia > lo de la última vez
   let pesoPre = null, repsPre = null, rirPre = null;
   if(dato){ pesoPre = dato.peso; repsPre = dato.reps; rirPre = dato.rir; }
-  else if(sug){ pesoPre = sug.peso; repsPre = sug.reps; rirPre = anterior ? anterior.rir : null; }
-  else if(anterior){ pesoPre = anterior.peso; repsPre = anterior.reps; rirPre = anterior.rir; }
+  else if(sug){ pesoPre = sug.peso; repsPre = sug.reps; }
+  else if(anterior){ pesoPre = anterior.peso; repsPre = anterior.reps; }
+  // rirPre solo se rellena con lo YA registrado hoy. El RIR no se precarga
+  // jamás desde la sesión anterior: es lo único que solo sabes después de
+  // hacer la serie, y un número ya marcado invita a aceptarlo sin sentirlo.
 
   const fila = document.createElement("div");
   fila.className = "serie" + (dato && dato.hecha ? " hecha" : "");
@@ -1126,6 +1135,9 @@ function filaSerie(ej,i,cuenta,art,sug){
       guardar();
     }
     chk.setAttribute("aria-pressed", String(marcar));
+    const objetivo = bloque(dia).rirObj;
+    fila.classList.toggle("pasado",
+      marcar && objetivo !== undefined && rirVal !== null && rirVal < objetivo);
     const hechas = sesion.series.filter(s => s.ejercicio === ej.n && s.hecha).length;
     cuenta.textContent = hechas+"/"+ej.s;
     art.classList.toggle("completo", hechas >= ej.s);
