@@ -1119,6 +1119,9 @@ function filaSerie(ej,i,cuenta,art,sug){
 
   chk.addEventListener("click", () => {
     desbloquearAudio();
+    // Soltar el campo al marcar: baja el teclado y, de paso, quita el contexto
+    // de edición que hace saltar el "agitar para deshacer" de iOS en el bolsillo.
+    try{ if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(e){}
     const marcar = !fila.classList.contains("hecha");
     if(marcar){
       // En carrera no se exige nada: los km y el ritmo viven en Strava, y
