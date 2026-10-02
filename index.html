@@ -1016,7 +1016,7 @@ function cabeceraSeries(ej){
   const h = document.createElement("div"); h.className = "cab-serie";
   const obj = bloque(dia).rirObj;
   const cols = ej.carrera
-    ? ["#", "Km", "Minutos", "", ""]
+    ? ["#", "Km · opc.", "Min · opc.", "", ""]
     : ["#", ej.sinCarga ? "Crono" : "Peso", ej.sinCarga ? "Seg." : "Reps",
        obj ? "RIR → " + obj : "RIR", ""];
   for(const x of cols){
@@ -1123,7 +1123,9 @@ function filaSerie(ej,i,cuenta,art,sug){
     desbloquearAudio();
     const marcar = !fila.classList.contains("hecha");
     if(marcar){
-      if(valores().reps === null){ cReps.querySelector("input").focus(); return; }
+      // En carrera no se exige nada: los km y el ritmo viven en Strava, y
+      // obligar a teclearlos aquí es la duplicación que hace que no se use.
+      if(!ej.carrera && valores().reps === null){ cReps.querySelector("input").focus(); return; }
       fila.classList.add("hecha");
       registrar();
       if(crono && crono.subida) pararCrono();
@@ -1159,6 +1161,16 @@ function filaSerie(ej,i,cuenta,art,sug){
 
 function pieEjercicio(ej, art){
   const pie = document.createElement("div"); pie.className = "pie-ej";
+
+  if(ej.carrera){
+    const n = document.createElement("p");
+    n.className = "nota"; n.style.margin = "4px 0 0";
+    n.textContent = "Toca el ✓ y ya está. Los kilómetros y el ritmo salen de Strava; "
+      + "rellena las casillas solo si la corriste en cinta y no quedó registrada.";
+    const caja = document.createElement("div");
+    caja.appendChild(n);
+    return caja;
+  }
 
   const alts = document.createElement("div"); alts.className = "alts"; alts.hidden = true;
 
