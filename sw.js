@@ -5,7 +5,7 @@
 
    Los datos de entreno NO pasan por aquí: viven en localStorage. */
 
-const CACHE = "cargas-v14";
+const CACHE = "cargas-v15";
 const ARMAZON = [
   "./",
   "./index.html",
